@@ -19,7 +19,7 @@ MAX_WAIT = 10
 MAX_RETRY = 10
 MAX_SCROLLS = 40
 
-HEADER = ['id_review', 'caption', 'timestamp', 'rating', 'username', 'n_review_user', 'n_photo_user']
+HEADER = ['id_review', 'caption', 'timestamp', 'rating', 'username', 'n_review_user', 'n_photo_user', 'url_user']
 
 class GoogleMaps:
 
