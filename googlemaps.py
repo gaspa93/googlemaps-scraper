@@ -31,7 +31,7 @@ class GoogleMaps:
 
         self.N = n_max_reviews
 
-        self.driver = self.__get_driver(debug=True)
+        self.driver = self.__get_driver()
         self.logger = self.__get_logger()
 
     def __enter__(self):
