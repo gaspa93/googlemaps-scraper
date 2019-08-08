@@ -87,7 +87,7 @@ class GoogleMaps:
 
             # scroll to load more reviews
             scrollable_div = self.driver.find_element_by_css_selector(
-                'div.section-listbox.section-scrollbox.scrollable-y.scrollable-show')
+                'div.section-layout.section-scrollbox.scrollable-y.scrollable-show')
             self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
 
             # wait for other reviews to load (ajax)
