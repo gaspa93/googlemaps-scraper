@@ -55,7 +55,8 @@ class GoogleMaps:
         wait = WebDriverWait(self.driver, MAX_WAIT)
 
         # order reviews by date
-        menu_bt = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.goog-inline-block.section-dropdown-menu-button-caption')))
+        #menu_bt = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.goog-inline-block.section-dropdown-menu-button-caption')))
+        menu_bt = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@data-value=\'Sort\']')))
 
         # sometimes problem in loading the event on this button
         clicked = False
@@ -64,7 +65,7 @@ class GoogleMaps:
             try:
                 menu_bt.click()
                 # second element of the list: most recent
-                recent_rating_bt = self.driver.find_elements_by_xpath('//div[@role=\'option\']')[2]
+                recent_rating_bt = self.driver.find_elements_by_xpath('//div[@role=\'menuitem\']')[1]
                 recent_rating_bt.click()
 
                 clicked = True
