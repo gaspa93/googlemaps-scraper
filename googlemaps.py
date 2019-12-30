@@ -31,7 +31,7 @@ class GoogleMaps:
 
         self.N = n_max_reviews
 
-        self.driver = self.__get_driver()
+        self.driver = self.__get_driver(debug=True)
         self.logger = self.__get_logger()
 
     def __enter__(self):
@@ -64,23 +64,22 @@ class GoogleMaps:
         while not clicked and tries < MAX_RETRY:
             try:
                 menu_bt.click()
-                # second element of the list: most recent
-                recent_rating_bt = self.driver.find_elements_by_xpath('//div[@role=\'menuitem\']')[1]
-                recent_rating_bt.click()
-
                 clicked = True
-
-                # wait to load review (ajax call)
-                time.sleep(5)
-
+                time.sleep(2)
             except Exception as e:
                 tries += 1
                 self.logger.warn('Failed to click recent button')
 
-        # failed to change the filter
-        if tries == MAX_RETRY:
-            return -1
+            # failed to change the filter
+            if tries == MAX_RETRY:
+                return -1
 
+        # second element of the list: most recent
+        recent_rating_bt = self.driver.find_elements_by_xpath('//div[@role=\'menuitem\']')[1]
+        recent_rating_bt.click()
+
+        # wait to load review (ajax call)
+        time.sleep(5)
 
         n_reviews_loaded = len(self.driver.find_elements_by_xpath('//div[@class=\'section-review-content\']'))
         n_scrolls = 0
