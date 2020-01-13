@@ -24,11 +24,17 @@ if __name__ == '__main__':
     with GoogleMaps() as scraper:
         with open(args.i, 'r') as urls_file:
             for url in urls_file:
+
                 error = scraper.sort_by_date(url)
                 if error == 0:
-                    reviews = scraper.get_reviews(0)
-
                     # store reviews in CSV file
                     writer = csv_writer()
-                    for r in reviews:
-                        writer.writerow(list(item.values()))
+
+                    n = 0
+                    while n < args.N:
+                        reviews = scraper.get_reviews(n)
+
+                        for r in reviews:
+                            writer.writerow(list(r.values()))
+
+                        n += len(reviews)
