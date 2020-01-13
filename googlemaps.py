@@ -45,7 +45,7 @@ class GoogleMaps:
         tries = 0
         while not clicked and tries < MAX_RETRY:
             try:
-                menu_bt = self.driver.find_element_by_xpath('//button[@data-value=\'Sort\']')
+                menu_bt = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.cYrDcjyGO77__container')))  # //button[@data-value=\'Sort\'] XPath with graphical interface
                 menu_bt.click()
 
                 clicked = True
