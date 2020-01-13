@@ -2,6 +2,16 @@
 from googlemaps import GoogleMaps
 from datetime import datetime, timedelta
 import argparse
+import csv
+
+HEADER = ['id_review', 'caption', 'timestamp', 'rating', 'username', 'n_review_user', 'n_photo_user', 'url_user']
+
+def csv_writer(path='data/', outfile='gm_reviews.csv'):
+    targetfile = open(path + outfile, mode='w', encoding='utf-8', newline='\n')
+    writer = csv.writer(targetfile, quoting=csv.QUOTE_MINIMAL)
+    writer.writerow(HEADER)
+
+    return writer
 
 
 if __name__ == '__main__':
@@ -11,11 +21,14 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    with GoogleMaps(args.N) as scraper:
+    writer = csv_writer()
+    with GoogleMaps() as scraper:
         with open(args.i, 'r') as urls_file:
             for url in urls_file:
                 error = scraper.sort_by_date(url)
                 if error == 0:
                     reviews = scraper.get_reviews(0)
-                else:
-                    print('Error')
+
+                    # store reviews in CSV file
+                    for r in reviews:
+                        writer.writerow(list(item.values()))

@@ -10,7 +10,6 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import time
 import re
-import csv, json
 import logging
 import traceback
 
@@ -19,19 +18,10 @@ MAX_WAIT = 10
 MAX_RETRY = 10
 MAX_SCROLLS = 40
 
-HEADER = ['id_review', 'caption', 'timestamp', 'rating', 'username', 'n_review_user', 'n_photo_user', 'url_user']
-
 class GoogleMaps:
 
-    def __init__(self, n_max_reviews):
-        config = json.load(open('config.json'))
-        folder = config['folder']
-        self.targetfile = open(folder + config['review-file'], mode='w', encoding='utf-8', newline='\n')
-        self.writer = self.__get_writer(HEADER)
-
-        self.N = n_max_reviews
-
-        self.driver = self.__get_driver(debug=True)
+    def __init__(self):
+        self.driver = self.__get_driver()
         self.logger = self.__get_logger()
 
     def __enter__(self):
@@ -43,8 +33,6 @@ class GoogleMaps:
 
         self.driver.close()
         self.driver.quit()
-
-        self.targetfile.close()
 
         return True
 
@@ -89,8 +77,6 @@ class GoogleMaps:
 
         # expand review text
         self.__expand_reviews()
-
-        n_reviews_loaded = len(self.driver.find_elements_by_xpath('//div[@class=\'section-review-content\']'))
 
         # parse reviews
         response = BeautifulSoup(self.driver.page_source, 'html.parser')
@@ -152,8 +138,6 @@ class GoogleMaps:
         item['n_photo_user'] = n_photos
         item['url_user'] = user_url
 
-        #self.writer.writerow(list(item.values()))
-
         return item
 
     # expand review description
@@ -201,13 +185,6 @@ class GoogleMaps:
         input_driver = webdriver.Chrome(chrome_options=options)
 
         return input_driver
-
-
-    def __get_writer(self, header):
-        writer = csv.writer(self.targetfile, quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(header)
-
-        return writer
 
 
     # util function to clean special characters
