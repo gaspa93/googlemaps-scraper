@@ -14,4 +14,8 @@ if __name__ == '__main__':
     with GoogleMaps(args.N) as scraper:
         with open(args.i, 'r') as urls_file:
             for url in urls_file:
-                scraper.get_reviews(url)
+                error = scraper.sort_by_date(url)
+                if error == 0:
+                    reviews = scraper.get_reviews(0)
+                else:
+                    print('Error')
