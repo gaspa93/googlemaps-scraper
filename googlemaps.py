@@ -10,7 +10,6 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import time
 import re
-import csv, json
 import logging
 import traceback
 
@@ -19,19 +18,10 @@ MAX_WAIT = 10
 MAX_RETRY = 10
 MAX_SCROLLS = 40
 
-HEADER = ['id_review', 'caption', 'timestamp', 'rating', 'username', 'n_review_user', 'n_photo_user', 'url_user']
-
 class GoogleMaps:
 
-    def __init__(self, n_max_reviews):
-        config = json.load(open('config.json'))
-        folder = config['folder']
-        self.targetfile = open(folder + config['review-file'], mode='w', encoding='utf-8', newline='\n')
-        self.writer = self.__get_writer(HEADER)
-
-        self.N = n_max_reviews
-
-        self.driver = self.__get_driver(debug=True)
+    def __init__(self):
+        self.driver = self.__get_driver()
         self.logger = self.__get_logger()
 
     def __enter__(self):
@@ -41,36 +31,30 @@ class GoogleMaps:
         if exc_type is not None:
             traceback.print_exception(exc_type, exc_value, tb)
 
-        self.logger.info('Closing chromedriver...')
         self.driver.close()
         self.driver.quit()
 
-        self.targetfile.close()
-
         return True
 
-    def get_reviews(self, url):
-
+    def sort_by_date(self, url):
         self.driver.get(url)
         wait = WebDriverWait(self.driver, MAX_WAIT)
 
-        # order reviews by date
-        #menu_bt = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.goog-inline-block.section-dropdown-menu-button-caption')))
-        menu_bt = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@data-value=\'Sort\']')))
-
-        # sometimes problem in loading the event on this button
+        # open dropdown menu
         clicked = False
         tries = 0
         while not clicked and tries < MAX_RETRY:
             try:
+                menu_bt = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.cYrDcjyGO77__container')))  # //button[@data-value=\'Sort\'] XPath with graphical interface
                 menu_bt.click()
+
                 clicked = True
-                time.sleep(2)
+                time.sleep(3)
             except Exception as e:
                 tries += 1
                 self.logger.warn('Failed to click recent button')
 
-            # failed to change the filter
+            # failed to open the dropdown
             if tries == MAX_RETRY:
                 return -1
 
@@ -81,36 +65,31 @@ class GoogleMaps:
         # wait to load review (ajax call)
         time.sleep(5)
 
-        n_reviews_loaded = len(self.driver.find_elements_by_xpath('//div[@class=\'section-review-content\']'))
-        n_scrolls = 0
-        while n_reviews_loaded < self.N and n_scrolls < MAX_SCROLLS:
+        return 0
 
-            # scroll to load more reviews
-            scrollable_div = self.driver.find_element_by_css_selector(
-                'div.section-layout.section-scrollbox.scrollable-y.scrollable-show')
-            self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
+    def get_reviews(self, offset):
 
-            # wait for other reviews to load (ajax)
-            time.sleep(4)
+        # scroll to load reviews
+        self.__scroll()
 
-            # expand review text
-            self.__expand_reviews()
+        # wait for other reviews to load (ajax)
+        time.sleep(4)
 
-            n_reviews_loaded = len(self.driver.find_elements_by_xpath('//div[@class=\'section-review-content\']'))
+        # expand review text
+        self.__expand_reviews()
 
-            n_scrolls += 1
-
+        # parse reviews
         response = BeautifulSoup(self.driver.page_source, 'html.parser')
-        reviews = response.find_all('div', class_='section-review-content')
+        rblock = response.find_all('div', class_='section-review-content')
+        parsed_reviews = []
+        for index, review in enumerate(rblock):
+            if index >= offset:
+                parsed_reviews.append(self.__parse(review))
 
-        n_reviews = 0
-        for idx, review in enumerate(reviews):
-            n_reviews += self.__parse_reviews(review)
-
-        self.logger.info('Scraped %d reviews', n_reviews)
+        return parsed_reviews
 
 
-    def __parse_reviews(self, review):
+    def __parse(self, review):
 
         item = {}
 
@@ -159,10 +138,7 @@ class GoogleMaps:
         item['n_photo_user'] = n_photos
         item['url_user'] = user_url
 
-        self.writer.writerow(list(item.values()))
-
-        return 1
-
+        return item
 
     # expand review description
     def __expand_reviews(self):
@@ -171,6 +147,11 @@ class GoogleMaps:
         for l in links:
             l.click()
         time.sleep(2)
+
+
+    def __scroll(self):
+        scrollable_div = self.driver.find_element_by_css_selector('div.section-layout.section-scrollbox.scrollable-y.scrollable-show')
+        self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
 
 
     def __get_logger(self):
@@ -204,13 +185,6 @@ class GoogleMaps:
         input_driver = webdriver.Chrome(chrome_options=options)
 
         return input_driver
-
-
-    def __get_writer(self, header):
-        writer = csv.writer(self.targetfile, quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(header)
-
-        return writer
 
 
     # util function to clean special characters
