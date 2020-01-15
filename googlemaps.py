@@ -18,7 +18,7 @@ MAX_WAIT = 10
 MAX_RETRY = 10
 MAX_SCROLLS = 40
 
-class GoogleMaps:
+class GoogleMapsScraper:
 
     def __init__(self):
         self.driver = self.__get_driver()
@@ -89,6 +89,20 @@ class GoogleMaps:
         return parsed_reviews
 
 
+    def get_account(self, url):
+
+        self.driver.get(url)
+
+        # ajax call also for this section
+        time.sleep(4)
+
+        resp = BeautifulSoup(self.driver.page_source, 'html.parser')
+
+        place_data = self.__parse_place(resp)
+
+        return place_data
+
+
     def __parse(self, review):
 
         item = {}
@@ -139,6 +153,15 @@ class GoogleMaps:
         item['url_user'] = user_url
 
         return item
+
+
+    def __parse_place(self, response):
+
+        place = {}
+        place['overall_rating'] = float(response.find('div', class_='gm2-display-2').text.replace(',', '.'))
+        place['n_reviews'] = int(response.find('div', class_='gm2-caption').text.replace('.', '').replace(',','').split(' ')[0])
+
+        return place
 
     # expand review description
     def __expand_reviews(self):

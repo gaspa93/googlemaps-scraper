@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from googlemaps import GoogleMaps
+from googlemaps import GoogleMapsScraper
 from datetime import datetime, timedelta
 import argparse
 import csv
@@ -18,23 +18,28 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Google Maps reviews scraper.')
     parser.add_argument('--N', type=int, default=100, help='Number of reviews to scrape')
     parser.add_argument('--i', type=str, default='urls.txt', help='target URLs file')
+    parser.add_argument('--place', dest='place', action='store_true', help='Scrape place metadata')
+    parser.set_defaults(place=False)
 
     args = parser.parse_args()
 
-    with GoogleMaps() as scraper:
+    with GoogleMapsScraper() as scraper:
         with open(args.i, 'r') as urls_file:
             for url in urls_file:
 
-                error = scraper.sort_by_date(url)
-                if error == 0:
-                    # store reviews in CSV file
-                    writer = csv_writer()
+                if args.place:
+                    print(scraper.get_account(url))
+                else:
+                    error = scraper.sort_by_date(url)
+                    if error == 0:
+                        # store reviews in CSV file
+                        writer = csv_writer()
 
-                    n = 0
-                    while n < args.N:
-                        reviews = scraper.get_reviews(n)
+                        n = 0
+                        while n < args.N:
+                            reviews = scraper.get_reviews(n)
 
-                        for r in reviews:
-                            writer.writerow(list(r.values()))
+                            for r in reviews:
+                                writer.writerow(list(r.values()))
 
-                        n += len(reviews)
+                            n += len(reviews)
