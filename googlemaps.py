@@ -20,7 +20,8 @@ MAX_SCROLLS = 40
 
 class GoogleMapsScraper:
 
-    def __init__(self):
+    def __init__(self, debug=False):
+        self.debug = debug
         self.driver = self.__get_driver()
         self.logger = self.__get_logger()
 
@@ -45,7 +46,10 @@ class GoogleMapsScraper:
         tries = 0
         while not clicked and tries < MAX_RETRY:
             try:
-                menu_bt = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.cYrDcjyGO77__container')))  # //button[@data-value=\'Sort\'] XPath with graphical interface
+                if not self.debug:
+                    menu_bt = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.cYrDcjyGO77__container')))
+                else:
+                    menu_bt = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@data-value=\'Sort\']')))
                 menu_bt.click()
 
                 clicked = True
@@ -113,7 +117,6 @@ class GoogleMapsScraper:
         try:
             review_text = self.__filter_string(review.find('span', class_='section-review-text').text)
         except Exception as e:
-            # print e
             review_text = None
 
         rating = float(review.find('span', class_='section-review-stars')['aria-label'].split(' ')[1])
@@ -200,7 +203,7 @@ class GoogleMapsScraper:
 
     def __get_driver(self, debug=False):
         options = Options()
-        if not debug:
+        if not self.debug:
             options.add_argument("--headless")
         options.add_argument("--window-size=1366,768")
         options.add_argument("--disable-notifications")

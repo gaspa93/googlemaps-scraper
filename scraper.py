@@ -32,6 +32,7 @@ if __name__ == '__main__':
                 else:
                     error = scraper.sort_by_date(url)
                     if error == 0:
+
                         # store reviews in CSV file
                         writer = csv_writer()
 
