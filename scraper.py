@@ -19,11 +19,12 @@ if __name__ == '__main__':
     parser.add_argument('--N', type=int, default=100, help='Number of reviews to scrape')
     parser.add_argument('--i', type=str, default='urls.txt', help='target URLs file')
     parser.add_argument('--place', dest='place', action='store_true', help='Scrape place metadata')
-    parser.set_defaults(place=False)
+    parser.add_argument('--debug', dest='debug', action='store_true', help='Run scraper using browser graphical interface')
+    parser.set_defaults(place=False, debug=False)
 
     args = parser.parse_args()
 
-    with GoogleMapsScraper() as scraper:
+    with GoogleMapsScraper(debug=args.debug) as scraper:
         with open(args.i, 'r') as urls_file:
             for url in urls_file:
 
