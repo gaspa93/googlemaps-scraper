@@ -4,12 +4,18 @@ from datetime import datetime, timedelta
 import argparse
 import csv
 
-HEADER = ['id_review', 'caption', 'timestamp', 'rating', 'username', 'n_review_user', 'n_photo_user', 'url_user', 'url_source']
+HEADER = ['id_review', 'caption', 'timestamp', 'rating', 'username', 'n_review_user', 'n_photo_user', 'url_user']
+HEADER_W_SOURCE = ['id_review', 'caption', 'timestamp', 'rating', 'username', 'n_review_user', 'n_photo_user', 'url_user', 'url_source']
 
-def csv_writer(path='data/', outfile='gm_reviews.csv'):
+def csv_writer(source_field, path='data/', outfile='gm_reviews.csv'):
     targetfile = open(path + outfile, mode='w', encoding='utf-8', newline='\n')
     writer = csv.writer(targetfile, quoting=csv.QUOTE_MINIMAL)
-    writer.writerow(HEADER)
+
+    if source:
+        h = HEADER_W_SOURCE
+    else:
+        h = HEADER
+    writer.writerow(h)
 
     return writer
 
@@ -26,7 +32,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # store reviews in CSV file
-    writer = csv_writer()
+    writer = csv_writer(args.source)
 
     with GoogleMapsScraper(debug=args.debug) as scraper:
         with open(args.i, 'r') as urls_file:
@@ -46,7 +52,7 @@ if __name__ == '__main__':
                                 row_data = list(r.values())
                                 if args.source:
                                     row_data.append(url)
-                                    
+
                                 writer.writerow(row_data)
 
                             n += len(reviews)
