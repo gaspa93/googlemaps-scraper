@@ -63,7 +63,7 @@ class GoogleMapsScraper:
                 return -1
 
         # second element of the list: most recent
-        recent_rating_bt = self.driver.find_elements_by_xpath('//li[@role=\'menuitemradio\']')[1]  # //div[@role=\'menuitem\']
+        recent_rating_bt = self.driver.find_elements_by_xpath('//li[@role=\'menuitemradio\']')[1] 
         recent_rating_bt.click()
 
         # wait to load review (ajax call)

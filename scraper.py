@@ -24,6 +24,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    # store reviews in CSV file
+    writer = csv_writer()
+
     with GoogleMapsScraper(debug=args.debug) as scraper:
         with open(args.i, 'r') as urls_file:
             for url in urls_file:
@@ -33,9 +36,6 @@ if __name__ == '__main__':
                 else:
                     error = scraper.sort_by_date(url)
                     if error == 0:
-
-                        # store reviews in CSV file
-                        writer = csv_writer()
 
                         n = 0
                         while n < args.N:
