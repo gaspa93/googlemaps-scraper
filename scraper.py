@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import argparse
 import csv
 
-HEADER = ['id_review', 'caption', 'timestamp', 'rating', 'username', 'n_review_user', 'n_photo_user', 'url_user']
+HEADER = ['id_review', 'caption', 'timestamp', 'rating', 'username', 'n_review_user', 'n_photo_user', 'url_user', 'url_source']
 
 def csv_writer(path='data/', outfile='gm_reviews.csv'):
     targetfile = open(path + outfile, mode='w', encoding='utf-8', newline='\n')
@@ -20,7 +20,8 @@ if __name__ == '__main__':
     parser.add_argument('--i', type=str, default='urls.txt', help='target URLs file')
     parser.add_argument('--place', dest='place', action='store_true', help='Scrape place metadata')
     parser.add_argument('--debug', dest='debug', action='store_true', help='Run scraper using browser graphical interface')
-    parser.set_defaults(place=False, debug=False)
+    parser.add_argument('--source', dest='source', action='store_true', help='Add source url to CSV file (for multiple urls in a single file)')
+    parser.set_defaults(place=False, debug=False, source=False)
 
     args = parser.parse_args()
 
@@ -42,6 +43,10 @@ if __name__ == '__main__':
                             reviews = scraper.get_reviews(n)
 
                             for r in reviews:
-                                writer.writerow(list(r.values()))
+                                row_data = list(r.values())
+                                if args.source:
+                                    row_data.append(url)
+                                    
+                                writer.writerow(row_data)
 
                             n += len(reviews)
