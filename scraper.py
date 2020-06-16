@@ -11,7 +11,7 @@ def csv_writer(source_field, path='data/', outfile='gm_reviews.csv'):
     targetfile = open(path + outfile, mode='w', encoding='utf-8', newline='\n')
     writer = csv.writer(targetfile, quoting=csv.QUOTE_MINIMAL)
 
-    if source:
+    if source_field:
         h = HEADER_W_SOURCE
     else:
         h = HEADER
