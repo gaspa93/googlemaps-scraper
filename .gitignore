@@ -107,3 +107,4 @@ venv.bak/
 test/
 data/*.csv
 .DS_Store
+*.html
