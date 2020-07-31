@@ -63,7 +63,7 @@ class GoogleMapsScraper:
                 return -1
 
         # second element of the list: most recent
-        recent_rating_bt = self.driver.find_elements_by_xpath('//li[@role=\'menuitemradio\']')[1] 
+        recent_rating_bt = self.driver.find_elements_by_xpath('//li[@role=\'menuitemradio\']')[1]
         recent_rating_bt.click()
 
         # wait to load review (ajax call)
@@ -203,11 +203,15 @@ class GoogleMapsScraper:
 
     def __get_driver(self, debug=False):
         options = Options()
+
         if not self.debug:
             options.add_argument("--headless")
-        options.add_argument("--window-size=1366,768")
+        else:
+            options.add_argument("--window-size=1366,768")
+
         options.add_argument("--disable-notifications")
-        options.add_experimental_option('prefs', {'intl.accept_languages': 'en_GB'})
+        options.add_argument("--lang=en")
+        #options.add_experimental_option('prefs', {'intl.accept_languages': 'en_GB'})
         input_driver = webdriver.Chrome(chrome_options=options)
 
         return input_driver
