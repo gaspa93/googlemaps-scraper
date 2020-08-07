@@ -210,8 +210,7 @@ class GoogleMapsScraper:
             options.add_argument("--window-size=1366,768")
 
         options.add_argument("--disable-notifications")
-        options.add_argument("--lang=en")
-        #options.add_experimental_option('prefs', {'intl.accept_languages': 'en_GB'})
+        options.add_argument("--lang=en-GB")
         input_driver = webdriver.Chrome(chrome_options=options)
 
         return input_driver
