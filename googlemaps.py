@@ -15,7 +15,7 @@ import traceback
 
 GM_WEBPAGE = 'https://www.google.com/maps/'
 MAX_WAIT = 10
-MAX_RETRY = 10
+MAX_RETRY = 5
 MAX_SCROLLS = 40
 
 class GoogleMapsScraper:
@@ -46,10 +46,10 @@ class GoogleMapsScraper:
         tries = 0
         while not clicked and tries < MAX_RETRY:
             try:
-                if not self.debug:
-                    menu_bt = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.cYrDcjyGO77__container')))
-                else:
-                    menu_bt = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@data-value=\'Sort\']')))
+                #if not self.debug:
+                #    menu_bt = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.cYrDcjyGO77__container')))
+                #else:
+                menu_bt = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@data-value=\'Sort\']')))
                 menu_bt.click()
 
                 clicked = True
