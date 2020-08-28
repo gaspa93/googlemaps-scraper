@@ -161,9 +161,16 @@ class GoogleMapsScraper:
     def __parse_place(self, response):
 
         place = {}
-        place['overall_rating'] = float(response.find('div', class_='gm2-display-2').text.replace(',', '.'))
-        place['n_reviews'] = int(response.find('div', class_='gm2-caption').text.replace('.', '').replace(',','').split(' ')[0])
+        try:
+            place['overall_rating'] = float(response.find('div', class_='gm2-display-2').text.replace(',', '.'))
+        except:
+            place['overall_rating'] = 'NOT FOUND'
 
+        try:
+            place['n_reviews'] = int(response.find('div', class_='gm2-caption').text.replace('.', '').replace(',','').split(' ')[0])
+        except:
+            place['n_reviews'] = 0
+            
         return place
 
     # expand review description
