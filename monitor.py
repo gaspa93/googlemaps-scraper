@@ -6,10 +6,13 @@ from datetime import datetime, timedelta
 import argparse
 import csv
 
+DB_URL = 'mongodb://localhost:27017/'
+DB_NAME = 'google-maps'
+COLLECTION_NAME = 'review'
 
 class Monitor:
 
-    def __init__(self, url_file, from_date, mongourl='mongodb://localhost:27017/'):
+    def __init__(self, url_file, from_date, mongourl=DB_URL):
 
         # load urls file
         with open(url_file, 'r')as furl:
@@ -28,7 +31,7 @@ class Monitor:
     def scrape_gm_reviews(self):
 
         # set connection to DB
-        collection = self.client['google-maps']['review']
+        collection = self.client[DB_NAME][COLLECTION_NAME]
 
         # init scraper and incremental add reviews
         with GoogleMapsScraper(logger=self.logger) as crawler:
@@ -76,16 +79,20 @@ class Monitor:
         # create logger
         logger = logging.getLogger('monitor')
         logger.setLevel(logging.DEBUG)
+
         # create console handler and set level to debug
         fh = logging.FileHandler('monitor.log')
         fh.setLevel(logging.DEBUG)
+
         # create formatter
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
         # add formatter to ch
         fh.setFormatter(formatter)
+
         # add ch to logger
         logger.addHandler(fh)
-        
+
         return logger
 
 
