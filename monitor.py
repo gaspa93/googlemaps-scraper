@@ -4,10 +4,10 @@ from pymongo import MongoClient
 from googlemaps import GoogleMapsScraper
 from datetime import datetime, timedelta
 import argparse
-import csv
+import logging
 
 DB_URL = 'mongodb://localhost:27017/'
-DB_NAME = 'google-maps'
+DB_NAME = 'googlemaps'
 COLLECTION_NAME = 'review'
 
 class Monitor:
@@ -15,15 +15,14 @@ class Monitor:
     def __init__(self, url_file, from_date, mongourl=DB_URL):
 
         # load urls file
-        with open(url_file, 'r')as furl:
-            self.urls = open(furl, 'r')
+        with open(url_file, 'r') as furl:
+            self.urls = [u[:-1] for u in furl]
 
         # define MongoDB connection
         self.client = MongoClient(mongourl)
 
         # min date review to scrape
-        self.min_date_review = from_date
-        print(self.min_date_review)
+        self.min_date_review = datetime.strptime(from_date, '%Y-%m-%d')
 
         # logging
         self.logger = self.__get_logger()
@@ -34,8 +33,8 @@ class Monitor:
         collection = self.client[DB_NAME][COLLECTION_NAME]
 
         # init scraper and incremental add reviews
-        with GoogleMapsScraper(logger=self.logger) as crawler:
-
+        # TO DO: pass logger as parameter to log into one single file?
+        with GoogleMapsScraper() as scraper:
             for url in self.urls:
                 try:
                     error = scraper.sort_by_date(url)
@@ -45,7 +44,7 @@ class Monitor:
                         offset = 0
                         n_new_reviews = 0
                         while not stop:
-                            rlist = crawler.get_reviews(offset)
+                            rlist = scraper.get_reviews(offset)
                             for r in rlist:
                                 stop = self.__stop(r, collection)
                                 if not stop:
@@ -67,7 +66,9 @@ class Monitor:
 
                     self.logger.error('{}: {}, {}, {}'.format(url, exc_type, fname, exc_tb.tb_lineno))
 
-
+    # TO DO: timestamp of review not present, only relative_date field
+    # need to calculate timestamp from relative_date (and store it, too)
+    # check problems with date formatting and language
     def __stop(self, r, collection):
         is_old_review = collection.find_one({'id_review': r['id_review']})
         if is_old_review is None and r['timestamp'] >= self.min_date_review:
@@ -79,17 +80,13 @@ class Monitor:
         # create logger
         logger = logging.getLogger('monitor')
         logger.setLevel(logging.DEBUG)
-
         # create console handler and set level to debug
         fh = logging.FileHandler('monitor.log')
         fh.setLevel(logging.DEBUG)
-
         # create formatter
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-
         # add formatter to ch
         fh.setFormatter(formatter)
-
         # add ch to logger
         logger.addHandler(fh)
 
@@ -100,7 +97,9 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Monitor Google Maps places')
     parser.add_argument('--i', type=str, default='urls.txt', help='target URLs file')
-    parser.add_argument('--from_date', type=str) # start date in format: YYYY-MM-DD
+    parser.add_argument('--from-date', type=str) # start date in format: YYYY-MM-DD
+
+    args = parser.parse_args()
 
     monitor = Monitor(args.i, args.from_date)
 
