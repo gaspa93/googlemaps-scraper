@@ -33,6 +33,7 @@ Additionally, other parameters can be provided:
 ## Monitoring functionality
 The monitor.py script can be used to have an incremental scraper and override the limitation about the number of reviews that can be retrieved.
 The only additional requirement is to install MongoDB on your laptop: you can find a detailed guide on the [official site](https://docs.mongodb.com/manual/installation/)
+
 The script takes two input:
 - `--i`: same as scraper.py script
 - `--from-date`: string date in the format YYYY-MM-DD, gives the minimum date that the scraper tries to obtain
