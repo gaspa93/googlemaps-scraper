@@ -51,7 +51,7 @@ if __name__ == '__main__':
                             for r in reviews:
                                 row_data = list(r.values())
                                 if args.source:
-                                    row_data.append(url)
+                                    row_data.append(url[:-1])
 
                                 writer.writerow(row_data)
 
