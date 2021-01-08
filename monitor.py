@@ -5,6 +5,7 @@ from googlemaps import GoogleMapsScraper
 from datetime import datetime, timedelta
 import argparse
 import logging
+import sys
 
 DB_URL = 'mongodb://localhost:27017/'
 DB_NAME = 'googlemaps'
@@ -28,7 +29,6 @@ class Monitor:
         self.logger = self.__get_logger()
 
     def scrape_gm_reviews(self):
-
         # set connection to DB
         collection = self.client[DB_NAME][COLLECTION_NAME]
 
@@ -39,16 +39,16 @@ class Monitor:
                 try:
                     error = scraper.sort_by_date(url)
                     if error == 0:
-                        # iterate over reviews to get previous run
                         stop = False
                         offset = 0
                         n_new_reviews = 0
                         while not stop:
                             rlist = scraper.get_reviews(offset)
                             for r in rlist:
+                                # calculate review date and compare to input min_date_review
+                                r['timestamp'] = self.__parse_relative_date(r['relative_date'])
                                 stop = self.__stop(r, collection)
                                 if not stop:
-                                    # insert to MongoDB
                                     collection.insert_one(r)
                                     n_new_reviews += 1
                                 else:
@@ -66,9 +66,42 @@ class Monitor:
 
                     self.logger.error('{}: {}, {}, {}'.format(url, exc_type, fname, exc_tb.tb_lineno))
 
-    # TO DO: timestamp of review not present, only relative_date field
-    # need to calculate timestamp from relative_date (and store it, too)
-    # check problems with date formatting and language
+
+    def __parse_relative_date(self, string_date):
+        curr_date = datetime.now()
+        split_date = string_date.split(' ')
+
+        n = split_date[0]
+        delta = split_date[1]
+
+        if delta == 'year':
+            return curr_date - timedelta(days=365)
+        elif delta == 'years':
+            return curr_date - timedelta(days=365 * int(n))
+        elif delta == 'month':
+            return curr_date - timedelta(days=30)
+        elif delta == 'months':
+            return curr_date - timedelta(days=30 * int(n))
+        elif delta == 'week':
+            return curr_date - timedelta(weeks=1)
+        elif delta == 'weeks':
+            return curr_date - timedelta(weeks=int(n))
+        elif delta == 'day':
+            return curr_date - timedelta(days=1)
+        elif delta == 'days':
+            return curr_date - timedelta(days=int(n))
+        elif delta == 'hour':
+            return curr_date - timedelta(hours=1)
+        elif delta == 'hours':
+            return curr_date - timedelta(hours=int(n))
+        elif delta == 'minute':
+            return curr_date - timedelta(minutes=1)
+        elif delta == 'minutes':
+            return curr_date - timedelta(minutes=int(n))
+        elif delta == 'moments':
+            return curr_date - timedelta(seconds=1)
+
+
     def __stop(self, r, collection):
         is_old_review = collection.find_one({'id_review': r['id_review']})
         if is_old_review is None and r['timestamp'] >= self.min_date_review:
