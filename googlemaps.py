@@ -37,7 +37,7 @@ class GoogleMapsScraper:
 
         return True
 
-    def sort_by_date(self, url):
+    def sort_by(self, url, ind):
         self.driver.get(url)
         wait = WebDriverWait(self.driver, MAX_WAIT)
 
@@ -62,14 +62,15 @@ class GoogleMapsScraper:
             if tries == MAX_RETRY:
                 return -1
 
-        # second element of the list: most recent
-        recent_rating_bt = self.driver.find_elements_by_xpath('//li[@role=\'menuitemradio\']')[1]
+        #  element of the list specified according to ind
+        recent_rating_bt = self.driver.find_elements_by_xpath('//li[@role=\'menuitemradio\']')[ind]
         recent_rating_bt.click()
-
+        
         # wait to load review (ajax call)
         time.sleep(5)
 
         return 0
+
 
     def get_reviews(self, offset):
 
@@ -89,6 +90,8 @@ class GoogleMapsScraper:
         for index, review in enumerate(rblock):
             if index >= offset:
                 parsed_reviews.append(self.__parse(review))
+                print(self.__parse(review))
+
 
         return parsed_reviews
 
@@ -170,7 +173,7 @@ class GoogleMapsScraper:
             place['n_reviews'] = int(response.find('div', class_='gm2-caption').text.replace('.', '').replace(',','').split(' ')[0])
         except:
             place['n_reviews'] = 0
-            
+
         return place
 
     # expand review description
@@ -185,6 +188,7 @@ class GoogleMapsScraper:
     def __scroll(self):
         scrollable_div = self.driver.find_element_by_css_selector('div.section-layout.section-scrollbox.scrollable-y.scrollable-show')
         self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
+        #self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
 
     def __get_logger(self):
