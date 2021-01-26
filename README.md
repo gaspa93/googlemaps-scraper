@@ -30,6 +30,9 @@ Additionally, other parameters can be provided:
 - `--debug`: boolean value that allows to run the browser using the graphical interface (default: false)
 - `--source`: boolean value that allows to store source URL as additional field in CSV (default: false)
 
+Moreover, specifiy
+- `--sort-by`: specify most_relevant, newest, highest_rating or lowest_rating (default: newest)
+
 ## Monitoring functionality
 The monitor.py script can be used to have an incremental scraper and override the limitation about the number of reviews that can be retrieved.
 The only additional requirement is to install MongoDB on your laptop: you can find a detailed guide on the [official site](https://docs.mongodb.com/manual/installation/)
