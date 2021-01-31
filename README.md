@@ -29,9 +29,9 @@ Additionally, other parameters can be provided:
 - `--place`: boolean value that allows to scrape POI metadata instead of reviews (default: false)
 - `--debug`: boolean value that allows to run the browser using the graphical interface (default: false)
 - `--source`: boolean value that allows to store source URL as additional field in CSV (default: false)
+- `--sort-by`: string value among most_relevant, newest, highest_rating or lowest_rating (default: newest), developed by @quaesito and that allows to change sorting behavior of reviews
 
-Moreover, specifiy
-- `--sort-by`: specify most_relevant, newest, highest_rating or lowest_rating (default: newest)
+For a basic description of logic and approach about this software development, have a look at the [Medium post](https://towardsdatascience.com/scraping-google-maps-reviews-in-python-2b153c655fc2)
 
 ## Monitoring functionality
 The monitor.py script can be used to have an incremental scraper and override the limitation about the number of reviews that can be retrieved.
@@ -49,5 +49,3 @@ If you want to generate the correct url:
 1. Go to Google Maps and look for a specific place;
 2. Click on the number of reviews in the parenthesis;
 3. Save the url that is generated from the latest interaction.
-
-For a basic description of logic and approach about this software development, have a look at the [Medium post](https://towardsdatascience.com/scraping-google-maps-reviews-in-python-2b153c655fc2)
