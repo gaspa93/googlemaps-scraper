@@ -52,6 +52,10 @@ if __name__ == '__main__':
                 if error == 0:
 
                     n = 0
+
+                    if ind[args.sort_by] == 0:
+                        scraper.more_reviews()
+                        
                     while n < args.N:
                         print(colored('[Review ' + str(n) + ']', 'cyan'))
                         reviews = scraper.get_reviews(n)
