@@ -87,7 +87,7 @@ class GoogleMapsScraper:
 
         # parse reviews
         response = BeautifulSoup(self.driver.page_source, 'html.parser')
-        rblock = response.find_all('div', class_='section-review-content')
+        rblock = response.find_all('div', class_='mapsConsumerUiSubviewSectionReview__section-review-content')
         parsed_reviews = []
         for index, review in enumerate(rblock):
             if index >= offset:
@@ -199,7 +199,7 @@ class GoogleMapsScraper:
 
 
     def __scroll(self):
-        scrollable_div = self.driver.find_element_by_css_selector('div.section-layout.section-scrollbox.scrollable-y.scrollable-show')
+        scrollable_div = self.driver.find_element_by_css_selector('div.section-layout.section-scrollbox.mapsConsumerUiCommonScrollable__scrollable-y.mapsConsumerUiCommonScrollable__scrollable-show')
         self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
         #self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
