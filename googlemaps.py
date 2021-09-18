@@ -87,7 +87,7 @@ class GoogleMapsScraper:
 
         # parse reviews
         response = BeautifulSoup(self.driver.page_source, 'html.parser')
-        rblock = response.find_all('div', class_='section-review-content')
+        rblock = response.find_all('div', class_='ODSEW-ShBeI NIyLF-haAclf gm2-body-2')
         parsed_reviews = []
         for index, review in enumerate(rblock):
             if index >= offset:
@@ -115,16 +115,16 @@ class GoogleMapsScraper:
 
         item = {}
 
-        id_review = review.find('button', class_='section-review-action-menu')['data-review-id']
-        username = review.find('div', class_='section-review-title').find('span').text
+        id_review = review.find('button', class_='ODSEW-ShBeI-JIbuQc-menu ODSEW-ShBeI-JIbuQc-menu-SfQLQb-title')['data-review-id']
+        username = review.find('div', class_='ODSEW-ShBeI-title').find('span').text
 
         try:
-            review_text = self.__filter_string(review.find('span', class_='section-review-text').text)
+            review_text = self.__filter_string(review.find('span', class_='ODSEW-ShBeI-text').text)
         except Exception as e:
             review_text = None
 
-        rating = float(review.find('span', class_='section-review-stars')['aria-label'].split(' ')[1])
-        relative_date = review.find('span', class_='section-review-publish-date').text
+        rating = float(review.find('span', class_='ODSEW-ShBeI-H1e3jb')['aria-label'].split(' ')[1])
+        relative_date = review.find('span', class_='ODSEW-ShBeI-RgZmSc-date').text
 
         try:
             n_reviews_photos = review.find('div', class_='section-review-subtitle').find_all('span')[1].text
@@ -199,7 +199,7 @@ class GoogleMapsScraper:
 
 
     def __scroll(self):
-        scrollable_div = self.driver.find_element_by_css_selector('div.section-layout.section-scrollbox.scrollable-y.scrollable-show')
+        scrollable_div = self.driver.find_element_by_css_selector('div.section-layout.section-scrollbox.cYB2Ge-oHo7ed.cYB2Ge-ti6hGc')
         self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
         #self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
