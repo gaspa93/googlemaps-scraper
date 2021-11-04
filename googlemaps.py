@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options as FireOptions
 from bs4 import BeautifulSoup
 from datetime import datetime
 import time
@@ -22,7 +23,7 @@ class GoogleMapsScraper:
 
     def __init__(self, debug=False):
         self.debug = debug
-        self.driver = self.__get_driver()
+        self.driver = self.__get_firefox_driver()
         self.logger = self.__get_logger()
 
     def __enter__(self):
@@ -87,7 +88,7 @@ class GoogleMapsScraper:
 
         # parse reviews
         response = BeautifulSoup(self.driver.page_source, 'html.parser')
-        rblock = response.find_all('div', class_='section-review-content')
+        rblock = response.find_all('div', class_='ODSEW-ShBeI-content')
         parsed_reviews = []
         for index, review in enumerate(rblock):
             if index >= offset:
@@ -115,19 +116,19 @@ class GoogleMapsScraper:
 
         item = {}
 
-        id_review = review.find('button', class_='section-review-action-menu')['data-review-id']
-        username = review.find('div', class_='section-review-title').find('span').text
+        id_review = review.find('button', class_='ODSEW-ShBeI-JIbuQc-menu ODSEW-ShBeI-JIbuQc-menu-SfQLQb-title')['data-review-id']
+        username = review.find('div', class_='ODSEW-ShBeI-RWgCYc ODSEW-ShBeI-RWgCYc-SfQLQb-BKD3ld').find('span').text
 
         try:
-            review_text = self.__filter_string(review.find('span', class_='section-review-text').text)
+            review_text = self.__filter_string(review.find('span', class_='ODSEW-ShBeI-text').text)
         except Exception as e:
             review_text = None
 
-        rating = float(review.find('span', class_='section-review-stars')['aria-label'].split(' ')[1])
-        relative_date = review.find('span', class_='section-review-publish-date').text
+        rating = float(review.find('span', class_='ODSEW-ShBeI-H1e3jb')['aria-label'].split(' ')[1])
+        relative_date = review.find('span', class_='ODSEW-ShBeI-RgZmSc-date').text
 
         try:
-            n_reviews_photos = review.find('div', class_='section-review-subtitle').find_all('span')[1].text
+            n_reviews_photos = review.find('div', class_='ODSEW-ShBeI-Jz7rA').find_all('span')[1].text
             metadata = n_reviews_photos.split('\xe3\x83\xbb')
             if len(metadata) == 3:
                 n_photos = int(metadata[2].split(' ')[0].replace('.', ''))
@@ -199,7 +200,8 @@ class GoogleMapsScraper:
 
 
     def __scroll(self):
-        scrollable_div = self.driver.find_element_by_css_selector('div.section-layout.section-scrollbox.scrollable-y.scrollable-show')
+        scrollable_div = self.driver.find_element_by_css_selector('div.siAUzd-neVct.section-scrollbox.cYB2Ge-oHo7ed.cYB2Ge-ti6hGc')
+        # scrollable_div = self.driver.find_element_by_css_selector('div.section-layout.section-scrollbox.scrollable-y.scrollable-show')
         self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
         #self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
@@ -234,11 +236,26 @@ class GoogleMapsScraper:
             options.add_argument("--window-size=1366,768")
 
         options.add_argument("--disable-notifications")
-        options.add_argument("--lang=en-GB")
+        options.add_argument("--lang=en-us")
         input_driver = webdriver.Chrome(chrome_options=options)
 
         return input_driver
 
+    def __get_firefox_driver(self, debug=False):
+        options = FireOptions()
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference('intl.accept_languages', 'en-GB')
+
+        if not self.debug:
+            options.add_argument("--headless")
+        else:
+            options.add_argument("--window-size=1366,768")
+
+        options.add_argument("--disable-notifications")
+        options.add_argument("--lang=en-us")
+        input_driver = webdriver.Firefox(firefox_options=options, firefox_profile=profile)
+
+        return input_driver
 
     # util function to clean special characters
     def __filter_string(self, str):

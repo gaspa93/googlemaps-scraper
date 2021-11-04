@@ -108,3 +108,5 @@ test/
 data/*.csv
 .DS_Store
 *.html
+chromedriver
+.virt/

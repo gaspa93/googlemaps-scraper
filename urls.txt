@@ -1,3 +1,1 @@
-https://www.google.com/maps/place/El+TabanKo/@42.848117,-2.6741402,19z/data=!4m15!1m7!3m6!1s0xd4fc26be313bc85:0xb10d327c782f87fa!2sCorrer%C3%ADa+Kalea,+45,+01001+Gasteiz,+Araba!3b1!8m2!3d42.8480012!4d-2.6737255!3m6!1s0xd4fc26be26c5be1:0x5f5e0ee05fe08041!8m2!3d42.8481171!4d-2.6735931!9m1!1b1
-https://www.google.es/maps/place/Alcazaba+de+Badajoz/@38.8838882,-6.9704566,17z/data=!4m7!3m6!1s0xd16e435eeb32fd5:0x9ee731b4e09cdf91!8m2!3d38.8838882!4d-6.9682679!9m1!1b1
-https://www.google.it/maps/place/Pantheon/@41.8986108,12.4746842,17z/data=!3m1!4b1!4m7!3m6!1s0x132f604f678640a9:0xcad165fa2036ce2c!8m2!3d41.8986108!4d12.4768729!9m1!1b1
+https://www.google.com/maps/place/The+Burger+House+%26+Crunchy+Fried+Chicken/@27.6857224,85.3328638,17z/data=!4m7!3m6!1s0x39eb19959c91dbcb:0x926eb7454275c696!8m2!3d27.6857224!4d85.3350525!9m1!1b1?fbclid=IwAR1WM813w6r0EWV2rAtwjdL4-nys5IyJ0wWW0A_VwEhsbuCW0_MZLvdUCEc
