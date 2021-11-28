@@ -60,6 +60,9 @@ if __name__ == '__main__':
                         print(colored('[Review ' + str(n) + ']', 'cyan'))
                         reviews = scraper.get_reviews(n)
 
+                        if len(reviews) == 0:
+                            break
+
                         for r in reviews:
                             row_data = list(r.values())
                             if args.source:
