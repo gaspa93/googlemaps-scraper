@@ -44,10 +44,8 @@ class GoogleMapsScraper:
         clicked = False
         tries = 0
         while not clicked and tries < MAX_RETRY:
-            print(tries)
             try:
                 menu_bt = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@data-value=\'Sort\']')))
-                print('1111')
                 menu_bt.click()
 
                 clicked = True
@@ -55,7 +53,7 @@ class GoogleMapsScraper:
             except Exception as e:
                 tries += 1
                 print('error details ', e)
-                self.logger.warn('Failed to click recent button')
+                self.logger.warn('Failed to click sorting button')
 
             # failed to open the dropdown
             if tries == MAX_RETRY:
