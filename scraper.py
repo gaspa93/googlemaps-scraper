@@ -7,7 +7,7 @@ from termcolor import colored
 import time
 
 
-ind = {'most_relevant' : 1 , 'newest' : 2, 'highest_rating' : 3, 'lowest_rating' : 4 }
+ind = {'most_relevant' : 0 , 'newest' : 1, 'highest_rating' : 2, 'lowest_rating' : 3 }
 HEADER = ['id_review', 'caption', 'relative_date', 'retrieval_date', 'rating', 'username', 'n_review_user', 'n_photo_user', 'url_user']
 HEADER_W_SOURCE = ['id_review', 'caption', 'relative_date','retrieval_date', 'rating', 'username', 'n_review_user', 'n_photo_user', 'url_user', 'url_source']
 
@@ -47,7 +47,6 @@ if __name__ == '__main__':
                     print(scraper.get_account(url))
                 else:
                     error = scraper.sort_by(url, ind[args.sort_by])
-                    print(error)
 
                 if error == 0:
 
@@ -57,9 +56,11 @@ if __name__ == '__main__':
                         scraper.more_reviews()
 
                     while n < args.N:
+                        
+                        # logging to std out
                         print(colored('[Review ' + str(n) + ']', 'cyan'))
-                        reviews = scraper.get_reviews(n)
 
+                        reviews = scraper.get_reviews(n)
                         if len(reviews) == 0:
                             break
 

@@ -56,7 +56,7 @@ class GoogleMapsScraper:
                 time.sleep(3)
             except Exception as e:
                 tries += 1
-                self.logger.warn('Failed to click recent button')
+                self.logger.warn('Failed to click sorting button')
 
             # failed to open the dropdown
             if tries == MAX_RETRY:
@@ -92,6 +92,8 @@ class GoogleMapsScraper:
         for index, review in enumerate(rblock):
             if index >= offset:
                 parsed_reviews.append(self.__parse(review))
+                
+                # logging to std out
                 print(self.__parse(review))
 
         return parsed_reviews
@@ -192,14 +194,14 @@ class GoogleMapsScraper:
         #<button ved="1i:1,t:18519,e:0,p:kPkcYIz-Dtql-QaL1YawDw:1969" jstcache="1202" jsaction="pane.reviewChart.moreReviews" class="gm2-button-alt jqnFjrOWMVU__button-blue" jsan="7.gm2-button-alt,7.jqnFjrOWMVU__button-blue,0.ved,22.jsaction">14 reviews</button>
         #<button aria-label="14 reviews" vet="3648" jsaction="pane.rating.moreReviews" jstcache="1010" class="widget-pane-link" jsan="7.widget-pane-link,0.aria-label,0.vet,0.jsaction">14 reviews</button>
         links = self.driver.find_elements_by_xpath('//button[@jsaction=\'pane.reviewChart.moreReviews\']')
-        print('LINKS HERE', links)
+
         for l in links:
             l.click()
         time.sleep(2)
 
 
     def __scroll(self):
-        scrollable_div = self.driver.find_element_by_css_selector('div.section-layout.section-scrollbox.cYB2Ge-oHo7ed.cYB2Ge-ti6hGc')
+        scrollable_div = self.driver.find_element_by_css_selector('div.siAUzd-neVct.section-scrollbox.cYB2Ge-oHo7ed.cYB2Ge-ti6hGc')
         self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
         #self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
@@ -236,6 +238,18 @@ class GoogleMapsScraper:
         options.add_argument("--disable-notifications")
         options.add_argument("--lang=en-GB")
         input_driver = webdriver.Chrome(chrome_options=options)
+
+         # first lets click on google agree button so we can continue
+        try:
+            input_driver.get(GM_WEBPAGE)
+            agree = WebDriverWait(input_driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, '//span[contains(text(), "I agree")]')))
+            agree.click()
+
+            # back to the main page
+            input_driver.switch_to_default_content()
+        except:
+            pass
 
         return input_driver
 
