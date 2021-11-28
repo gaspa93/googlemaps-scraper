@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
+from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from datetime import datetime
 import time
+import re
 import logging
 import traceback
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 
 GM_WEBPAGE = 'https://www.google.com/maps/'
 MAX_WAIT = 10
 MAX_RETRY = 5
 MAX_SCROLLS = 40
-
 
 class GoogleMapsScraper:
 
@@ -37,14 +39,16 @@ class GoogleMapsScraper:
 
     def sort_by(self, url, ind):
         self.driver.get(url)
-
         wait = WebDriverWait(self.driver, MAX_WAIT)
-        time.sleep(50)
+
         # open dropdown menu
         clicked = False
         tries = 0
         while not clicked and tries < MAX_RETRY:
             try:
+                #if not self.debug:
+                #    menu_bt = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.cYrDcjyGO77__container')))
+                #else:
                 menu_bt = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@data-value=\'Sort\']')))
                 menu_bt.click()
 
@@ -52,8 +56,7 @@ class GoogleMapsScraper:
                 time.sleep(3)
             except Exception as e:
                 tries += 1
-                print('error details ', e)
-                self.logger.warn('Failed to click sorting button')
+                self.logger.warn('Failed to click recent button')
 
             # failed to open the dropdown
             if tries == MAX_RETRY:
@@ -68,6 +71,7 @@ class GoogleMapsScraper:
 
         return 0
 
+
     def get_reviews(self, offset):
 
         # scroll to load reviews
@@ -77,12 +81,13 @@ class GoogleMapsScraper:
 
         self.__scroll()
 
+
         # expand review text
         self.__expand_reviews()
 
         # parse reviews
         response = BeautifulSoup(self.driver.page_source, 'html.parser')
-        rblock = response.find_all('div', class_='section-review-content')
+        rblock = response.find_all('div', class_='ODSEW-ShBeI NIyLF-haAclf gm2-body-2')
         parsed_reviews = []
         for index, review in enumerate(rblock):
             if index >= offset:
@@ -90,6 +95,7 @@ class GoogleMapsScraper:
                 print(self.__parse(review))
 
         return parsed_reviews
+
 
     def get_account(self, url):
 
@@ -104,20 +110,21 @@ class GoogleMapsScraper:
 
         return place_data
 
+
     def __parse(self, review):
 
         item = {}
 
-        id_review = review.find('button', class_='section-review-action-menu')['data-review-id']
-        username = review.find('div', class_='section-review-title').find('span').text
+        id_review = review.find('button', class_='ODSEW-ShBeI-JIbuQc-menu ODSEW-ShBeI-JIbuQc-menu-SfQLQb-title')['data-review-id']
+        username = review.find('div', class_='ODSEW-ShBeI-title').find('span').text
 
         try:
-            review_text = self.__filter_string(review.find('span', class_='section-review-text').text)
+            review_text = self.__filter_string(review.find('span', class_='ODSEW-ShBeI-text').text)
         except Exception as e:
             review_text = None
 
-        rating = float(review.find('span', class_='section-review-stars')['aria-label'].split(' ')[1])
-        relative_date = review.find('span', class_='section-review-publish-date').text
+        rating = float(review.find('span', class_='ODSEW-ShBeI-H1e3jb')['aria-label'].split(' ')[1])
+        relative_date = review.find('span', class_='ODSEW-ShBeI-RgZmSc-date').text
 
         try:
             n_reviews_photos = review.find('div', class_='section-review-subtitle').find_all('span')[1].text
@@ -154,6 +161,7 @@ class GoogleMapsScraper:
 
         return item
 
+
     def __parse_place(self, response):
 
         place = {}
@@ -163,8 +171,7 @@ class GoogleMapsScraper:
             place['overall_rating'] = 'NOT FOUND'
 
         try:
-            place['n_reviews'] = int(
-                response.find('div', class_='gm2-caption').text.replace('.', '').replace(',', '').split(' ')[0])
+            place['n_reviews'] = int(response.find('div', class_='gm2-caption').text.replace('.', '').replace(',','').split(' ')[0])
         except:
             place['n_reviews'] = 0
 
@@ -181,20 +188,21 @@ class GoogleMapsScraper:
     # load more reviews
     def more_reviews(self):
         # use XPath to load complete reviews
-        # allxGeDnJMl__text gm2-button-alt
-        # <button ved="1i:1,t:18519,e:0,p:kPkcYIz-Dtql-QaL1YawDw:1969" jstcache="1202" jsaction="pane.reviewChart.moreReviews" class="gm2-button-alt jqnFjrOWMVU__button-blue" jsan="7.gm2-button-alt,7.jqnFjrOWMVU__button-blue,0.ved,22.jsaction">14 reviews</button>
-        # <button aria-label="14 reviews" vet="3648" jsaction="pane.rating.moreReviews" jstcache="1010" class="widget-pane-link" jsan="7.widget-pane-link,0.aria-label,0.vet,0.jsaction">14 reviews</button>
+        #allxGeDnJMl__text gm2-button-alt
+        #<button ved="1i:1,t:18519,e:0,p:kPkcYIz-Dtql-QaL1YawDw:1969" jstcache="1202" jsaction="pane.reviewChart.moreReviews" class="gm2-button-alt jqnFjrOWMVU__button-blue" jsan="7.gm2-button-alt,7.jqnFjrOWMVU__button-blue,0.ved,22.jsaction">14 reviews</button>
+        #<button aria-label="14 reviews" vet="3648" jsaction="pane.rating.moreReviews" jstcache="1010" class="widget-pane-link" jsan="7.widget-pane-link,0.aria-label,0.vet,0.jsaction">14 reviews</button>
         links = self.driver.find_elements_by_xpath('//button[@jsaction=\'pane.reviewChart.moreReviews\']')
         print('LINKS HERE', links)
         for l in links:
             l.click()
         time.sleep(2)
 
+
     def __scroll(self):
-        scrollable_div = self.driver.find_element_by_css_selector(
-            'div.section-layout.section-scrollbox.scrollable-y.scrollable-show')
+        scrollable_div = self.driver.find_element_by_css_selector('div.section-layout.section-scrollbox.cYB2Ge-oHo7ed.cYB2Ge-ti6hGc')
         self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
-        # self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        #self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
 
     def __get_logger(self):
         # create logger
@@ -216,6 +224,7 @@ class GoogleMapsScraper:
 
         return logger
 
+
     def __get_driver(self, debug=False):
         options = Options()
 
@@ -228,19 +237,8 @@ class GoogleMapsScraper:
         options.add_argument("--lang=en-GB")
         input_driver = webdriver.Chrome(chrome_options=options)
 
-        # first lets click on google agree button so we can continue
-        try:
-            input_driver.get(GM_WEBPAGE)
-            agree = WebDriverWait(input_driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//span[contains(text(),"I agree")]')))
-            agree.click()
-
-            # back to the main page
-            input_driver.switch_to_default_content()
-        except:
-            pass
-
         return input_driver
+
 
     # util function to clean special characters
     def __filter_string(self, str):
