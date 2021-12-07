@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 from datetime import datetime
 import time
@@ -237,7 +238,7 @@ class GoogleMapsScraper:
 
         options.add_argument("--disable-notifications")
         options.add_argument("--lang=en-GB")
-        input_driver = webdriver.Chrome(chrome_options=options)
+        input_driver = webdriver.Chrome(executable_path=ChromeDriverManager(log_level=0).install(), options=options)
 
          # first lets click on google agree button so we can continue
         try:
