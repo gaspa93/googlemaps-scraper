@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import pandas as pd
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,6 +15,9 @@ import time
 import re
 import logging
 import traceback
+import numpy as np
+import itertools
+
 
 GM_WEBPAGE = 'https://www.google.com/maps/'
 MAX_WAIT = 10
@@ -71,6 +76,86 @@ class GoogleMapsScraper:
         time.sleep(5)
 
         return 0
+
+    def get_places(self, method='urls', keyword_list=None):
+
+        df_places = pd.DataFrame()
+
+        if method == 'urls':
+            # search_point_url = row['url']  # TODO:
+            pass
+        if method == 'squares':
+            search_point_url_list = self._gen_search_points_from_square(keyword_list=keyword_list)
+        else:
+            # search_point_url = f"https://www.google.com/maps/search/{row['keyword']}/@{str(row['longitude'])},{str(row['latitude'])},{str(row['zoom'])}z"
+            # TODO:
+            pass
+
+        for i, search_point_url in enumerate(search_point_url_list):
+
+            if (i+1) % 10 == 0:
+                print(f"{i}/{len(search_point_url_list)}")
+                df_places = df_places[['search_point_url', 'href', 'name', 'rating', 'num_reviews', 'close_time', 'other']]
+                df_places.to_csv('output/places_wax.csv', index=False)
+
+
+            try:
+                self.driver.get(search_point_url)
+            except NoSuchElementException:
+                self.driver.quit()
+                self.driver = self.__get_driver()
+                self.driver.get(search_point_url)
+
+            # Gambiarra to load all places into the page
+            scrollable_div = self.driver.find_element_by_css_selector(
+                "div.siAUzd-neVct.section-scrollbox.cYB2Ge-oHo7ed.cYB2Ge-ti6hGc > div[aria-label*='Results for']")
+            for i in range(10):
+                self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
+
+            # Get places names and href
+            # time.sleep(2)
+            response = BeautifulSoup(self.driver.page_source, 'html.parser')
+            div_places = response.select('div[jsaction] > a[href]')
+            # print(len(div_places))
+            for div_place in div_places:
+                place_info = {
+                    'search_point_url': search_point_url.replace('https://www.google.com/maps/search/', ''),
+                    'href': div_place['href'],
+                    'name': div_place['aria-label'],
+                    'rating': None,
+                    'num_reviews': None,
+                    'close_time': None,
+                    'other': None
+                }
+
+                df_places = df_places.append(place_info, ignore_index=True)
+        df_places = df_places[['search_point_url', 'href', 'name', 'rating', 'num_reviews', 'close_time', 'other']]
+        df_places.to_csv('output/places_wax.csv', index=False)
+        self.driver.quit()
+
+    def _gen_search_points_from_square(self, keyword_list=None):
+        # TODO: Generate search points from corners of square
+
+        keyword_list = [] if keyword_list is None else keyword_list
+
+        square_points = pd.read_csv('input/square_points.csv')
+
+        cities = square_points['city'].unique()
+
+        search_urls = []
+
+        for city in cities:
+
+            df_aux = square_points[square_points['city'] == city]
+            latitudes = np.linspace(df_aux['latitude'].min(), df_aux['latitude'].max(), num=20)
+            longitudes = np.linspace(df_aux['longitude'].min(), df_aux['longitude'].max(), num=20)
+            coordinates_list = list(itertools.product(latitudes, longitudes, keyword_list))
+
+            search_urls += [f"https://www.google.com/maps/search/{coordinates[2]}/@{str(coordinates[1])},{str(coordinates[0])},{str(15)}z"
+             for coordinates in coordinates_list]
+
+        return search_urls
+
 
 
     def get_reviews(self, offset):

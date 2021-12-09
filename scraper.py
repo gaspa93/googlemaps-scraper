@@ -40,7 +40,7 @@ if __name__ == '__main__':
     # store reviews in CSV file
     writer = csv_writer(args.source, args.sort_by)
 
-    with GoogleMapsScraper(debug=args.debug) as scraper:
+    with GoogleMapsScraper(debug=True) as scraper:
         with open(args.i, 'r') as urls_file:
             for url in urls_file:
                 if args.place:
