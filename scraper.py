@@ -40,7 +40,7 @@ if __name__ == '__main__':
     # store reviews in CSV file
     writer = csv_writer(args.source, args.sort_by)
 
-    with GoogleMapsScraper(debug=True) as scraper:
+    with GoogleMapsScraper(debug=args.debug) as scraper:
         with open(args.i, 'r') as urls_file:
             for url in urls_file:
                 if args.place:
@@ -52,11 +52,11 @@ if __name__ == '__main__':
 
                     n = 0
 
-                    if ind[args.sort_by] == 0:
-                        scraper.more_reviews()
+                    #if ind[args.sort_by] == 0:
+                    #    scraper.more_reviews()
 
                     while n < args.N:
-                        
+
                         # logging to std out
                         print(colored('[Review ' + str(n) + ']', 'cyan'))
 

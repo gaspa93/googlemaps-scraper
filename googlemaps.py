@@ -178,7 +178,7 @@ class GoogleMapsScraper:
         for index, review in enumerate(rblock):
             if index >= offset:
                 parsed_reviews.append(self.__parse(review))
-                
+
                 # logging to std out
                 print(self.__parse(review))
 
@@ -269,18 +269,6 @@ class GoogleMapsScraper:
     def __expand_reviews(self):
         # use XPath to load complete reviews
         links = self.driver.find_elements_by_xpath('//button[@class=\'section-expand-review blue-link\']')
-        for l in links:
-            l.click()
-        time.sleep(2)
-
-    # load more reviews
-    def more_reviews(self):
-        # use XPath to load complete reviews
-        #allxGeDnJMl__text gm2-button-alt
-        #<button ved="1i:1,t:18519,e:0,p:kPkcYIz-Dtql-QaL1YawDw:1969" jstcache="1202" jsaction="pane.reviewChart.moreReviews" class="gm2-button-alt jqnFjrOWMVU__button-blue" jsan="7.gm2-button-alt,7.jqnFjrOWMVU__button-blue,0.ved,22.jsaction">14 reviews</button>
-        #<button aria-label="14 reviews" vet="3648" jsaction="pane.rating.moreReviews" jstcache="1010" class="widget-pane-link" jsan="7.widget-pane-link,0.aria-label,0.vet,0.jsaction">14 reviews</button>
-        links = self.driver.find_elements_by_xpath('//button[@jsaction=\'pane.reviewChart.moreReviews\']')
-
         for l in links:
             l.click()
         time.sleep(2)
