@@ -38,14 +38,16 @@ The monitor.py script can be used to have an incremental scraper and override th
 The only additional requirement is to install MongoDB on your laptop: you can find a detailed guide on the [official site](https://docs.mongodb.com/manual/installation/)
 
 The script takes two input:
-- `--i`: same as scraper.py script
+- `--i`: same as monitor.py script
 - `--from-date`: string date in the format YYYY-MM-DD, gives the minimum date that the scraper tries to obtain
 
-The main idea is to **periodically** run the script to obtain latest reviews: the scraper stores them in MongoDB up to get either the latest review of previous run or the day indicated in the input parameter. 
+The main idea is to **periodically** run the script to obtain latest reviews: the scraper stores them in MongoDB up to get either the latest review of previous run or the day indicated in the input parameter.
+
+Take a look to this [Medium post](https://medium.com/@mattiagasparini2/monitoring-of-google-maps-reviews-29e5d35f9d17) to have more details about the idea behind this feature.
 
 ## Notes
 Url must be provided as expected, you can check the example file urls.txt to have an idea of what is a correct url.
 If you want to generate the correct url:
 1. Go to Google Maps and look for a specific place;
 2. Click on the number of reviews in the parenthesis;
-3. Save the url that is generated from the latest interaction.
+3. Save the url that is generated from previous interaction.
