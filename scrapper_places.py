@@ -7,10 +7,10 @@ import pandas as pd
 
 if __name__ == '__main__':
 
-    # df_coodinates = pd.read_csv('input/coordinates.csv')
+    scraper = GoogleMapsScraper()
 
-    # df_coodinates = pd.read_csv('input/urls_places.csv')
+    #scraper.get_places(method='squares', keyword_list=['laser'])
+    urls=scraper._gen_search_points_from_square(keyword_list=["romantic restaurant"])
 
-    scraper = GoogleMapsScraper(debug=True)
-
-    scraper.get_places(method='squares', keyword_list=['laser'])
+    for u in urls:
+        print(u)

@@ -184,7 +184,7 @@ class GoogleMapsScraper:
 
         return parsed_reviews
 
-
+    # need to use different url wrt reviews one to have all info
     def get_account(self, url):
 
         self.driver.get(url)
@@ -194,7 +194,7 @@ class GoogleMapsScraper:
 
         resp = BeautifulSoup(self.driver.page_source, 'html.parser')
 
-        place_data = self.__parse_place(resp)
+        place_data = self.__parse_place(resp, url)
 
         return place_data
 
@@ -250,18 +250,56 @@ class GoogleMapsScraper:
         return item
 
 
-    def __parse_place(self, response):
+    def __parse_place(self, response, url):
 
         place = {}
-        try:
-            place['overall_rating'] = float(response.find('div', class_='gm2-display-2').text.replace(',', '.'))
-        except:
-            place['overall_rating'] = 'NOT FOUND'
 
         try:
-            place['n_reviews'] = int(response.find('div', class_='gm2-caption').text.replace('.', '').replace(',','').split(' ')[0])
-        except:
+            place['name'] = response.find('h1', class_='DUwDvf fontHeadlineLarge').text
+        except Exception as e:
+            place['name'] = None
+
+        try:
+            place['overall_rating'] = float(response.find('div', class_='F7nice mmu3tf').text.replace(',', '.'))
+        except Exception as e:
+            place['overall_rating'] = None
+
+        try:
+            place['n_reviews'] = int(response.find('span', class_='F7nice mmu3tf').text.replace('.', '').replace(',','').split(' ')[0])
+        except Exception as e:
             place['n_reviews'] = 0
+
+        try:
+            place['n_photos'] = int(response.find('div', class_='YkuOqf').text.replace('.', '').replace(',','').split(' ')[0])
+        except Exception as e:
+            place['n_photos'] = 0
+
+        try:
+            place['category'] = response.find('button', jsaction='pane.rating.category').text
+        except Exception as e:
+            place['category'] = None
+
+        try:
+            place['description'] = response.find('div', class_='PYvSYb').text
+        except Exception as e:
+            place['description'] = None
+
+        b_list = response.find_all('button', class_='CsEnBe')
+        for b in b_list:
+            if b['data-item-id'] == 'address':
+                place['address'] = b.text.strip()
+            elif b['data-item-id'].split(':')[0] == 'phone':
+                place['phone_number'] = b.text.strip()
+            elif b['data-item-id'] == 'authority':
+                place['website'] = b.text.strip()
+            elif b['data-item-id'] == 'oloc':
+                place['plus_code'] = b.text.strip()
+
+        place['url'] = url
+
+        lat, long, z = url.split('/')[6].split(',')
+        place['lat'] = lat[1:]
+        place['long'] = long
 
         return place
 

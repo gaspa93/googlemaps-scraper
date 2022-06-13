@@ -106,5 +106,7 @@ venv.bak/
 # other
 test/
 data/*.csv
+input/*.csv
 .DS_Store
 *.html
+*.txt
