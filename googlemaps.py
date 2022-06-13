@@ -77,21 +77,13 @@ class GoogleMapsScraper:
 
         return 0
 
-    def get_places(self, method='urls', keyword_list=None):
+    def get_places(self, keyword_list=None):
 
         df_places = pd.DataFrame()
-
-        if method == 'urls':
-            # search_point_url = row['url']  # TODO:
-            pass
-        if method == 'squares':
-            search_point_url_list = self._gen_search_points_from_square(keyword_list=keyword_list)
-        else:
-            # search_point_url = f"https://www.google.com/maps/search/{row['keyword']}/@{str(row['longitude'])},{str(row['latitude'])},{str(row['zoom'])}z"
-            # TODO:
-            pass
+        search_point_url_list = self._gen_search_points_from_square(keyword_list=keyword_list)
 
         for i, search_point_url in enumerate(search_point_url_list):
+            print(search_point_url)
 
             if (i+1) % 10 == 0:
                 print(f"{i}/{len(search_point_url_list)}")
@@ -106,55 +98,30 @@ class GoogleMapsScraper:
                 self.driver = self.__get_driver()
                 self.driver.get(search_point_url)
 
-            # Gambiarra to load all places into the page
+            # scroll to load all (20) places into the page
             scrollable_div = self.driver.find_element_by_css_selector(
-                "div.siAUzd-neVct.section-scrollbox.cYB2Ge-oHo7ed.cYB2Ge-ti6hGc > div[aria-label*='Results for']")
+                "div.m6QErb.DxyBCb.kA9KIf.dS8AEf.ecceSd > div[aria-label*='Results for']")
             for i in range(10):
                 self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
 
             # Get places names and href
-            # time.sleep(2)
+            time.sleep(2)
             response = BeautifulSoup(self.driver.page_source, 'html.parser')
             div_places = response.select('div[jsaction] > a[href]')
-            # print(len(div_places))
+
             for div_place in div_places:
                 place_info = {
                     'search_point_url': search_point_url.replace('https://www.google.com/maps/search/', ''),
                     'href': div_place['href'],
-                    'name': div_place['aria-label'],
-                    'rating': None,
-                    'num_reviews': None,
-                    'close_time': None,
-                    'other': None
+                    'name': div_place['aria-label']
                 }
 
                 df_places = df_places.append(place_info, ignore_index=True)
-        df_places = df_places[['search_point_url', 'href', 'name', 'rating', 'num_reviews', 'close_time', 'other']]
+
+            # TODO: implement click to handle > 20 places
+
+        df_places = df_places[['search_point_url', 'href', 'name']]
         df_places.to_csv('output/places_wax.csv', index=False)
-        self.driver.quit()
-
-    def _gen_search_points_from_square(self, keyword_list=None):
-        # TODO: Generate search points from corners of square
-
-        keyword_list = [] if keyword_list is None else keyword_list
-
-        square_points = pd.read_csv('input/square_points.csv')
-
-        cities = square_points['city'].unique()
-
-        search_urls = []
-
-        for city in cities:
-
-            df_aux = square_points[square_points['city'] == city]
-            latitudes = np.linspace(df_aux['latitude'].min(), df_aux['latitude'].max(), num=20)
-            longitudes = np.linspace(df_aux['longitude'].min(), df_aux['longitude'].max(), num=20)
-            coordinates_list = list(itertools.product(latitudes, longitudes, keyword_list))
-
-            search_urls += [f"https://www.google.com/maps/search/{coordinates[2]}/@{str(coordinates[1])},{str(coordinates[0])},{str(15)}z"
-             for coordinates in coordinates_list]
-
-        return search_urls
 
 
 
@@ -183,6 +150,8 @@ class GoogleMapsScraper:
                 print(self.__parse(review))
 
         return parsed_reviews
+
+
 
     # need to use different url wrt reviews one to have all info
     def get_account(self, url):
@@ -302,6 +271,31 @@ class GoogleMapsScraper:
         place['long'] = long
 
         return place
+
+
+    def _gen_search_points_from_square(self, keyword_list=None):
+        # TODO: Generate search points from corners of square
+
+        keyword_list = [] if keyword_list is None else keyword_list
+
+        square_points = pd.read_csv('input/square_points.csv')
+
+        cities = square_points['city'].unique()
+
+        search_urls = []
+
+        for city in cities:
+
+            df_aux = square_points[square_points['city'] == city]
+            latitudes = df_aux['latitude'].unique()
+            longitudes = df_aux['longitude'].unique()
+            coordinates_list = list(itertools.product(latitudes, longitudes, keyword_list))
+
+            search_urls += [f"https://www.google.com/maps/search/{coordinates[2]}/@{str(coordinates[1])},{str(coordinates[0])},{str(15)}z"
+             for coordinates in coordinates_list]
+
+        return search_urls
+
 
     # expand review description
     def __expand_reviews(self):

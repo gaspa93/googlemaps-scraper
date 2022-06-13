@@ -7,10 +7,7 @@ import pandas as pd
 
 if __name__ == '__main__':
 
-    scraper = GoogleMapsScraper()
-
-    #scraper.get_places(method='squares', keyword_list=['laser'])
-    urls=scraper._gen_search_points_from_square(keyword_list=["romantic restaurant"])
-
-    for u in urls:
-        print(u)
+    # input: starting coordinates list (each is "central point for the search")
+    # input: number of places for each coordinate
+    with GoogleMapsScraper(debug=True) as scraper:
+        scraper.get_places(keyword_list=["romantic restaurant"])
