@@ -173,7 +173,8 @@ class GoogleMapsScraper:
 
         # parse reviews
         response = BeautifulSoup(self.driver.page_source, 'html.parser')
-        rblock = response.find_all('div', class_='ODSEW-ShBeI NIyLF-haAclf gm2-body-2')
+        # TODO: Subject to changes
+        rblock = response.find_all('div', class_='jftiEf fontBodyMedium')
         parsed_reviews = []
         for index, review in enumerate(rblock):
             if index >= offset:
@@ -203,16 +204,36 @@ class GoogleMapsScraper:
 
         item = {}
 
-        id_review = review.find('button', class_='ODSEW-ShBeI-JIbuQc-menu ODSEW-ShBeI-JIbuQc-menu-SfQLQb-title')['data-review-id']
-        username = review.find('div', class_='ODSEW-ShBeI-title').find('span').text
 
         try:
-            review_text = self.__filter_string(review.find('span', class_='ODSEW-ShBeI-text').text)
+            # TODO: Subject to changes
+            id_review = review['data-review-id']
+        except Exception as e:
+            id_review = None
+    
+        try:
+            # TODO: Subject to changes
+            username = review['aria-label']
+        except Exception as e:
+            username = None
+    
+        try:
+            # TODO: Subject to changes
+            review_text = self.__filter_string(review.find('span', class_='wiI7pd').text)
         except Exception as e:
             review_text = None
 
-        rating = float(review.find('span', class_='ODSEW-ShBeI-H1e3jb')['aria-label'].split(' ')[1])
-        relative_date = review.find('span', class_='ODSEW-ShBeI-RgZmSc-date').text
+        try:
+            # TODO: Subject to changes
+            rating = float(review.find('span', class_='kvMYJc')['aria-label'].split(' ')[1])
+        except Exception as e:
+            rating = None
+
+        try:
+            # TODO: Subject to changes
+            relative_date = review.find('span', class_='rsqaWe').text
+        except Exception as e:
+            relative_date = None        
 
         try:
             n_reviews_photos = review.find('div', class_='section-review-subtitle').find_all('span')[1].text
@@ -229,13 +250,16 @@ class GoogleMapsScraper:
             n_reviews = 0
             n_photos = 0
 
-        user_url = review.find('a')['href']
+        try:
+            user_url = review.find('a')['href']
+        except Exception as e:
+            user_url = None
 
         item['id_review'] = id_review
         item['caption'] = review_text
 
         # depends on language, which depends on geolocation defined by Google Maps
-        # custom mapping to transform into date shuold be implemented
+        # custom mapping to transform into date should be implemented
         item['relative_date'] = relative_date
 
         # store datetime of scraping and apply further processing to calculate
@@ -268,14 +292,16 @@ class GoogleMapsScraper:
     # expand review description
     def __expand_reviews(self):
         # use XPath to load complete reviews
-        links = self.driver.find_elements_by_xpath('//button[@class=\'section-expand-review blue-link\']')
+        # TODO: Subject to changes
+        links = self.driver.find_elements_by_xpath('//button[@jsaction="pane.review.expandReview"]')
         for l in links:
             l.click()
         time.sleep(2)
 
 
     def __scroll(self):
-        scrollable_div = self.driver.find_element_by_css_selector('div.siAUzd-neVct.section-scrollbox.cYB2Ge-oHo7ed.cYB2Ge-ti6hGc')
+        # TODO: Subject to changes
+        scrollable_div = self.driver.find_element_by_css_selector('div.m6QErb.DxyBCb.kA9KIf.dS8AEf')
         self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
         #self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
