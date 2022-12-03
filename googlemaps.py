@@ -44,7 +44,10 @@ class GoogleMapsScraper:
         return True
 
     def sort_by(self, url, ind):
+
         self.driver.get(url)
+        self.__click_on_cookie_agreement()
+
         wait = WebDriverWait(self.driver, MAX_WAIT)
 
         # open dropdown menu
@@ -52,9 +55,6 @@ class GoogleMapsScraper:
         tries = 0
         while not clicked and tries < MAX_RETRY:
             try:
-                #if not self.debug:
-                #    menu_bt = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.cYrDcjyGO77__container')))
-                #else:
                 menu_bt = wait.until(EC.element_to_be_clickable((By.XPATH, '//button[@data-value=\'Sort\']')))
                 menu_bt.click()
 
@@ -69,7 +69,7 @@ class GoogleMapsScraper:
                 return -1
 
         #  element of the list specified according to ind
-        recent_rating_bt = self.driver.find_elements_by_xpath('//li[@role=\'menuitemradio\']')[ind]
+        recent_rating_bt = self.driver.find_elements_by_xpath('//div[@role=\'menuitemradio\']')[ind]
         recent_rating_bt.click()
 
         # wait to load review (ajax call)
@@ -210,13 +210,13 @@ class GoogleMapsScraper:
             id_review = review['data-review-id']
         except Exception as e:
             id_review = None
-    
+
         try:
             # TODO: Subject to changes
             username = review['aria-label']
         except Exception as e:
             username = None
-    
+
         try:
             # TODO: Subject to changes
             review_text = self.__filter_string(review.find('span', class_='wiI7pd').text)
@@ -233,7 +233,7 @@ class GoogleMapsScraper:
             # TODO: Subject to changes
             relative_date = review.find('span', class_='rsqaWe').text
         except Exception as e:
-            relative_date = None        
+            relative_date = None
 
         try:
             n_reviews_photos = review.find('div', class_='section-review-subtitle').find_all('span')[1].text
@@ -339,21 +339,25 @@ class GoogleMapsScraper:
         options.add_argument("--lang=en-GB")
         input_driver = webdriver.Chrome(executable_path=ChromeDriverManager(log_level=0).install(), options=options)
 
-         # first click on google agree button so we can continue
+         # click on google agree button so we can continue (not needed anymore)
          # EC.element_to_be_clickable((By.XPATH, '//span[contains(text(), "I agree")]')))
-        try:
-            input_driver.get(GM_WEBPAGE)
-            agree = WebDriverWait(input_driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//span[contains(text(), "Accept all")]')))
-            agree.click()
-
-            # back to the main page
-            input_driver.switch_to_default_content()
-        except:
-            pass
+        input_driver.get(GM_WEBPAGE)
 
         return input_driver
 
+    # cookies agreement click
+    def __click_on_cookie_agreement(self):
+        try:
+            agree = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, '//span[contains(text(), "Reject all")]')))
+            agree.click()
+
+            # back to the main page
+            # self.driver.switch_to_default_content()
+
+            return True
+        except:
+            return False
 
     # util function to clean special characters
     def __filter_string(self, str):
