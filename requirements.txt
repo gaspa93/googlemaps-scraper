@@ -3,3 +3,5 @@ selenium==3.14.0
 pymongo==3.9.0
 termcolor==1.1.0
 webdriver-manager==3.5.2
+pandas==0.25.2
+numpy==1.17.2
