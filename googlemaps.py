@@ -313,11 +313,12 @@ class GoogleMapsScraper:
         options.add_argument("--lang=en-GB")
         input_driver = webdriver.Chrome(executable_path=ChromeDriverManager(log_level=0).install(), options=options)
 
-         # first lets click on google agree button so we can continue
+         # first click on google agree button so we can continue
+         # EC.element_to_be_clickable((By.XPATH, '//span[contains(text(), "I agree")]')))
         try:
             input_driver.get(GM_WEBPAGE)
             agree = WebDriverWait(input_driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//span[contains(text(), "I agree")]')))
+                EC.element_to_be_clickable((By.XPATH, '//span[contains(text(), "Accept all")]')))
             agree.click()
 
             # back to the main page
