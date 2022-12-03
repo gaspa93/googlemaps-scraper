@@ -264,11 +264,11 @@ class GoogleMapsScraper:
             elif b['data-item-id'] == 'oloc':
                 place['plus_code'] = b.text.strip()
 
-        place['url'] = url
+        #place['url'] = url
 
-        lat, long, z = url.split('/')[6].split(',')
-        place['lat'] = lat[1:]
-        place['long'] = long
+        #lat, long, z = url.split('/')[6].split(',')
+        #place['lat'] = lat[1:]
+        #place['long'] = long
 
         return place
 
