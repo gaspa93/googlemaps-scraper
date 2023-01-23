@@ -158,9 +158,15 @@ class GoogleMapsScraper:
     def get_account(self, url):
 
         self.driver.get(url)
+        self.__click_on_cookie_agreement()
 
         # ajax call also for this section
         time.sleep(4)
+
+        # click to open opening hours section
+        opening_hours = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, '//span[@class=\'rh7Scc LaAyid M5ziBd\']')))
+        opening_hours.click()
 
         resp = BeautifulSoup(self.driver.page_source, 'html.parser')
 
@@ -248,17 +254,17 @@ class GoogleMapsScraper:
         place = {}
 
         try:
-            place['name'] = response.find('h1', class_='DUwDvf fontHeadlineLarge').text
+            place['name'] = response.find('h1', class_='DUwDvf fontHeadlineLarge').text.strip()
         except Exception as e:
             place['name'] = None
 
         try:
-            place['overall_rating'] = float(response.find('div', class_='F7nice mmu3tf').text.replace(',', '.'))
+            place['overall_rating'] = float(response.find('div', class_='F7nice mmu3tf').find('span', class_='ceNzKf')['aria-label'].split(' ')[2])
         except Exception as e:
             place['overall_rating'] = None
 
         try:
-            place['n_reviews'] = int(response.find('span', class_='F7nice mmu3tf').text.replace('.', '').replace(',','').split(' ')[0])
+            place['n_reviews'] = int(response.find('div', class_='F7nice mmu3tf').text[3:].split(' ')[0].replace(',', ''))
         except Exception as e:
             place['n_reviews'] = 0
 
@@ -268,25 +274,40 @@ class GoogleMapsScraper:
             place['n_photos'] = 0
 
         try:
-            place['category'] = response.find('button', jsaction='pane.rating.category').text
+            place['category'] = response.find('button', jsaction='pane.rating.category').text.strip()
         except Exception as e:
             place['category'] = None
 
         try:
-            place['description'] = response.find('div', class_='PYvSYb').text
+            place['description'] = response.find('div', class_='PYvSYb').text.strip()
         except Exception as e:
             place['description'] = None
 
-        b_list = response.find_all('button', class_='CsEnBe')
-        for b in b_list:
-            if b['data-item-id'] == 'address':
-                place['address'] = b.text.strip()
-            elif b['data-item-id'].split(':')[0] == 'phone':
-                place['phone_number'] = b.text.strip()
-            elif b['data-item-id'] == 'authority':
-                place['website'] = b.text.strip()
-            elif b['data-item-id'] == 'oloc':
-                place['plus_code'] = b.text.strip()
+        b_list = response.find_all('div', class_='Io6YTe fontBodyMedium')
+        try:
+            place['address'] = b_list[0].text
+        except Exception as e:
+            place['address'] = None
+
+        try:
+            place['website'] = b_list[1].text
+        except Exception as e:
+            place['website'] = None
+
+        try:
+            place['phone_number'] = b_list[2].text
+        except Exception as e:
+            place['phone_number'] = None
+    
+        try:
+            place['plus_code'] = b_list[3].text
+        except Exception as e:
+            place['plus_code'] = None
+
+        try:
+            place['opening_hours'] = response.find('table', class_='eK4R0e fontBodyMedium')
+        except:
+            place['opening_hours'] = None
 
         #place['url'] = url
 
