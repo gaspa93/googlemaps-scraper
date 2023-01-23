@@ -105,8 +105,8 @@ venv.bak/
 
 # other
 test/
-data/*.csv
-input/*.csv
+*.csv
 .DS_Store
 *.html
 *.txt
+!requirements.txt
