@@ -161,12 +161,29 @@ class GoogleMapsScraper:
         self.__click_on_cookie_agreement()
 
         # ajax call also for this section
-        time.sleep(4)
+        time.sleep(2)
 
         # click to open opening hours section
-        opening_hours = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, '//span[@class=\'rh7Scc LaAyid M5ziBd\']')))
+        #print(self.driver.find_element(By.CSS_SELECTOR, 'div.OMl5r.hH0dDd').get_attribute('innerHTML'))
+        opening_hours = WebDriverWait(self.driver, 5).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.OMl5r.hH0dDd')))
         opening_hours.click()
+
+        wait = WebDriverWait(self.driver, MAX_WAIT)
+
+        # open dropdown menu
+        clicked = False
+        tries = 0
+        while not clicked and tries < MAX_RETRY:
+            try:
+                opening_hours = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.OMl5r.hH0dDd')))
+                opening_hours.click()
+
+                clicked = True
+                time.sleep(1)
+            except Exception as e:
+                tries += 1
+                self.logger.warn('Failed to expand opening hours')
 
         resp = BeautifulSoup(self.driver.page_source, 'html.parser')
 
@@ -305,15 +322,15 @@ class GoogleMapsScraper:
             place['plus_code'] = None
 
         try:
-            place['opening_hours'] = response.find('table', class_='eK4R0e fontBodyMedium')
+            place['opening_hours'] = response.find('table', class_='eK4R0e fontBodyMedium').text
         except:
             place['opening_hours'] = None
 
-        #place['url'] = url
+        place['url'] = url
 
-        #lat, long, z = url.split('/')[6].split(',')
-        #place['lat'] = lat[1:]
-        #place['long'] = long
+        lat, long, z = url.split('/')[6].split(',')
+        place['lat'] = lat[1:]
+        place['long'] = long
 
         return place
 
