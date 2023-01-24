@@ -163,27 +163,15 @@ class GoogleMapsScraper:
         # ajax call also for this section
         time.sleep(2)
 
+        #print(self.driver.page_source)
+
         # click to open opening hours section
         #print(self.driver.find_element(By.CSS_SELECTOR, 'div.OMl5r.hH0dDd').get_attribute('innerHTML'))
         opening_hours = WebDriverWait(self.driver, 5).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.OMl5r.hH0dDd')))
+                EC.element_to_be_clickable((By.XPATH, 'div.OMl5r.hH0dDd'))) 
         opening_hours.click()
 
         wait = WebDriverWait(self.driver, MAX_WAIT)
-
-        # open dropdown menu
-        clicked = False
-        tries = 0
-        while not clicked and tries < MAX_RETRY:
-            try:
-                opening_hours = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.OMl5r.hH0dDd')))
-                opening_hours.click()
-
-                clicked = True
-                time.sleep(1)
-            except Exception as e:
-                tries += 1
-                self.logger.warn('Failed to expand opening hours')
 
         resp = BeautifulSoup(self.driver.page_source, 'html.parser')
 
