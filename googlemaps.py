@@ -161,12 +161,10 @@ class GoogleMapsScraper:
     def get_reviews(self, offset):
 
         # scroll to load reviews
+        self.__scroll()
 
         # wait for other reviews to load (ajax)
         time.sleep(4)
-
-        self.__scroll()
-
 
         # expand review text
         self.__expand_reviews()
