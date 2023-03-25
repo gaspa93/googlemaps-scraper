@@ -163,16 +163,6 @@ class GoogleMapsScraper:
         # ajax call also for this section
         time.sleep(2)
 
-        #print(self.driver.page_source)
-
-        # click to open opening hours section
-        #print(self.driver.find_element(By.CSS_SELECTOR, 'div.OMl5r.hH0dDd').get_attribute('innerHTML'))
-        opening_hours = WebDriverWait(self.driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH, 'div.OMl5r.hH0dDd'))) 
-        opening_hours.click()
-
-        wait = WebDriverWait(self.driver, MAX_WAIT)
-
         resp = BeautifulSoup(self.driver.page_source, 'html.parser')
 
         place_data = self.__parse_place(resp, url)
@@ -263,13 +253,15 @@ class GoogleMapsScraper:
         except Exception as e:
             place['name'] = None
 
+        print(response.find('div', class_='F7nice ').find('span', class_='ceNzKf')['aria-label'])
+        print(response.find('div', class_='F7nice ').text)
         try:
-            place['overall_rating'] = float(response.find('div', class_='F7nice mmu3tf').find('span', class_='ceNzKf')['aria-label'].split(' ')[2])
+            place['overall_rating'] = float(response.find('div', class_='F7nice ').find('span', class_='ceNzKf')['aria-label'].split(' ')[1])
         except Exception as e:
             place['overall_rating'] = None
 
         try:
-            place['n_reviews'] = int(response.find('div', class_='F7nice mmu3tf').text[3:].split(' ')[0].replace(',', ''))
+            place['n_reviews'] = int(response.find('div', class_='F7nice ').text.split('(')[1].replace(',', '').replace(')', ''))
         except Exception as e:
             place['n_reviews'] = 0
 
@@ -310,7 +302,7 @@ class GoogleMapsScraper:
             place['plus_code'] = None
 
         try:
-            place['opening_hours'] = response.find('table', class_='eK4R0e fontBodyMedium').text
+            place['opening_hours'] = response.find('div', class_='t39EBf GUrTXd')['aria-label'].replace('\u202f', ' ')
         except:
             place['opening_hours'] = None
 
