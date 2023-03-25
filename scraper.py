@@ -48,27 +48,27 @@ if __name__ == '__main__':
                 else:
                     error = scraper.sort_by(url, ind[args.sort_by])
 
-                if error == 0:
+                    if error == 0:
 
-                    n = 0
+                        n = 0
 
-                    #if ind[args.sort_by] == 0:
-                    #    scraper.more_reviews()
+                        #if ind[args.sort_by] == 0:
+                        #    scraper.more_reviews()
 
-                    while n < args.N:
+                        while n < args.N:
 
-                        # logging to std out
-                        print(colored('[Review ' + str(n) + ']', 'cyan'))
+                            # logging to std out
+                            print(colored('[Review ' + str(n) + ']', 'cyan'))
 
-                        reviews = scraper.get_reviews(n)
-                        if len(reviews) == 0:
-                            break
+                            reviews = scraper.get_reviews(n)
+                            if len(reviews) == 0:
+                                break
 
-                        for r in reviews:
-                            row_data = list(r.values())
-                            if args.source:
-                                row_data.append(url[:-1])
+                            for r in reviews:
+                                row_data = list(r.values())
+                                if args.source:
+                                    row_data.append(url[:-1])
 
-                            writer.writerow(row_data)
+                                writer.writerow(row_data)
 
-                        n += len(reviews)
+                            n += len(reviews)

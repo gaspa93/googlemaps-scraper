@@ -7,10 +7,7 @@ import pandas as pd
 
 if __name__ == '__main__':
 
-    # df_coodinates = pd.read_csv('input/coordinates.csv')
-
-    # df_coodinates = pd.read_csv('input/urls_places.csv')
-
-    scraper = GoogleMapsScraper(debug=True)
-
-    scraper.get_places(method='squares', keyword_list=['laser'])
+    # input: starting coordinates list (each is "central point for the search")
+    # input: number of places for each coordinate
+    with GoogleMapsScraper(debug=True) as scraper:
+        scraper.get_places(keyword_list=["romantic restaurant"])
