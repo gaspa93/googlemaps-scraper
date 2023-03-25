@@ -251,8 +251,6 @@ class GoogleMapsScraper:
         except Exception as e:
             place['name'] = None
 
-        print(response.find('div', class_='F7nice ').find('span', class_='ceNzKf')['aria-label'])
-        print(response.find('div', class_='F7nice ').text)
         try:
             place['overall_rating'] = float(response.find('div', class_='F7nice ').find('span', class_='ceNzKf')['aria-label'].split(' ')[1])
         except Exception as e:
