@@ -139,7 +139,7 @@ class GoogleMapsScraper:
         # parse reviews
         response = BeautifulSoup(self.driver.page_source, 'html.parser')
         # TODO: Subject to changes
-        rblock = response.find_all('div', class_='jftiEf fontBodyMedium')
+        rblock = response.find_all('div', class_='jftiEf fontBodyMedium ')
         parsed_reviews = []
         for index, review in enumerate(rblock):
             if index >= offset:
