@@ -143,10 +143,11 @@ class GoogleMapsScraper:
         parsed_reviews = []
         for index, review in enumerate(rblock):
             if index >= offset:
-                parsed_reviews.append(self.__parse(review))
+                r = self.__parse(review)
+                parsed_reviews.append(r)
 
                 # logging to std out
-                print(self.__parse(review))
+                print(r)
 
         return parsed_reviews
 
@@ -172,7 +173,6 @@ class GoogleMapsScraper:
 
         item = {}
 
-
         try:
             # TODO: Subject to changes
             id_review = review['data-review-id']
@@ -193,7 +193,7 @@ class GoogleMapsScraper:
 
         try:
             # TODO: Subject to changes
-            rating = float(review.find('span', class_='kvMYJc')['aria-label'].split(' ')[1])
+            rating = float(review.find('span', class_='kvMYJc')['aria-label'].split(' ')[0])
         except Exception as e:
             rating = None
 
@@ -204,22 +204,12 @@ class GoogleMapsScraper:
             relative_date = None
 
         try:
-            n_reviews_photos = review.find('div', class_='section-review-subtitle').find_all('span')[1].text
-            metadata = n_reviews_photos.split('\xe3\x83\xbb')
-            if len(metadata) == 3:
-                n_photos = int(metadata[2].split(' ')[0].replace('.', ''))
-            else:
-                n_photos = 0
-
-            idx = len(metadata)
-            n_reviews = int(metadata[idx - 1].split(' ')[0].replace('.', ''))
-
+            n_reviews = review.find('div', class_='RfnDt').text.split(' ')[3]
         except Exception as e:
             n_reviews = 0
-            n_photos = 0
 
         try:
-            user_url = review.find('a')['href']
+            user_url = review.find('button', class_='WEBjve')['data-href']
         except Exception as e:
             user_url = None
 
@@ -236,7 +226,7 @@ class GoogleMapsScraper:
         item['rating'] = rating
         item['username'] = username
         item['n_review_user'] = n_reviews
-        item['n_photo_user'] = n_photos
+        #item['n_photo_user'] = n_photos  ## not available anymore
         item['url_user'] = user_url
 
         return item
@@ -382,7 +372,8 @@ class GoogleMapsScraper:
             options.add_argument("--window-size=1366,768")
 
         options.add_argument("--disable-notifications")
-        options.add_argument("--lang=en-GB")
+        #options.add_argument("--lang=en-GB")
+        options.add_argument("--accept-lang=en-GB")
         input_driver = webdriver.Chrome(executable_path=ChromeDriverManager(log_level=0).install(), options=options)
 
          # click on google agree button so we can continue (not needed anymore)
