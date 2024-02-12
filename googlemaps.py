@@ -11,11 +11,11 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver import ChromeOptions as Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ChromeOptions as Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
@@ -140,7 +140,7 @@ class GoogleMapsScraper:
         # parse reviews
         response = BeautifulSoup(self.driver.page_source, 'html.parser')
         # TODO: Subject to changes
-        rblock = response.find_all('div', class_='jftiEf fontBodyMedium ')
+        rblock = response.find_all('div', class_='jftiEf fontBodyMedium')
         parsed_reviews = []
         for index, review in enumerate(rblock):
             if index >= offset:
@@ -330,10 +330,9 @@ class GoogleMapsScraper:
     def __expand_reviews(self):
         # use XPath to load complete reviews
         # TODO: Subject to changes
-        links = self.driver.find_elements(By.XPATH, '//button[@jsaction="pane.review.expandReview"]')
-        for l in links:
-            l.click()
-        time.sleep(2)
+        buttons = self.driver.find_elements(By.CSS_SELECTOR,'button.w8nwRe.kyuRq')
+        for button in buttons:
+            self.driver.execute_script("arguments[0].click();", button)
 
 
     def __scroll(self):
