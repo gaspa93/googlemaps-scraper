@@ -12,5 +12,3 @@ requests==2.31.0
 selenium==4.17.2
 termcolor==2.4.0
 webdriver-manager==3.5.2
-pandas==2.2.0
-numpy==1.26.4
