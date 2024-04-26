@@ -5,7 +5,7 @@ An additional extension helps to monitor and incrementally store the reviews in 
 
 ## Installation
 Follow these steps to use the scraper:
-- Download Chromedrive from [here](https://chromedriver.storage.googleapis.com/index.html?path=2.45/).
+- Download latest version of Chromedrive from [here](https://chromedriver.storage.googleapis.com/index.html).
 - Install Python packages from requirements file, either using pip, conda or virtualenv:
 
         conda create --name scraping python=3.9 --file requirements.txt
