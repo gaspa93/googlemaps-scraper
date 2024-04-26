@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
-import pandas as pd
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from bs4 import BeautifulSoup
-from datetime import datetime
-import time
-import re
-import logging
-import traceback
-import numpy as np
 import itertools
+import logging
+import re
+import time
+import traceback
+from datetime import datetime
 
+import numpy as np
+import pandas as pd
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver import ChromeOptions as Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 
 GM_WEBPAGE = 'https://www.google.com/maps/'
 MAX_WAIT = 10
@@ -69,7 +70,7 @@ class GoogleMapsScraper:
                 return -1
 
         #  element of the list specified according to ind
-        recent_rating_bt = self.driver.find_elements_by_xpath('//div[@role=\'menuitemradio\']')[ind]
+        recent_rating_bt = self.driver.find_elements(By.XPATH, '//div[@role=\'menuitemradio\']')[ind]
         recent_rating_bt.click()
 
         # wait to load review (ajax call)
@@ -99,7 +100,7 @@ class GoogleMapsScraper:
                 self.driver.get(search_point_url)
 
             # scroll to load all (20) places into the page
-            scrollable_div = self.driver.find_element_by_css_selector(
+            scrollable_div = self.driver.find_element(By.CSS_SELECTOR,
                 "div.m6QErb.DxyBCb.kA9KIf.dS8AEf.ecceSd > div[aria-label*='Results for']")
             for i in range(10):
                 self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
@@ -139,7 +140,7 @@ class GoogleMapsScraper:
         # parse reviews
         response = BeautifulSoup(self.driver.page_source, 'html.parser')
         # TODO: Subject to changes
-        rblock = response.find_all('div', class_='jftiEf fontBodyMedium ')
+        rblock = response.find_all('div', class_='jftiEf fontBodyMedium')
         parsed_reviews = []
         for index, review in enumerate(rblock):
             if index >= offset:
@@ -329,15 +330,14 @@ class GoogleMapsScraper:
     def __expand_reviews(self):
         # use XPath to load complete reviews
         # TODO: Subject to changes
-        links = self.driver.find_elements_by_xpath('//button[@jsaction="pane.review.expandReview"]')
-        for l in links:
-            l.click()
-        time.sleep(2)
+        buttons = self.driver.find_elements(By.CSS_SELECTOR,'button.w8nwRe.kyuRq')
+        for button in buttons:
+            self.driver.execute_script("arguments[0].click();", button)
 
 
     def __scroll(self):
         # TODO: Subject to changes
-        scrollable_div = self.driver.find_element_by_css_selector('div.m6QErb.DxyBCb.kA9KIf.dS8AEf')
+        scrollable_div = self.driver.find_element(By.CSS_SELECTOR,'div.m6QErb.DxyBCb.kA9KIf.dS8AEf')
         self.driver.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrollable_div)
         #self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
@@ -374,7 +374,7 @@ class GoogleMapsScraper:
         options.add_argument("--disable-notifications")
         #options.add_argument("--lang=en-GB")
         options.add_argument("--accept-lang=en-GB")
-        input_driver = webdriver.Chrome(executable_path=ChromeDriverManager(log_level=0).install(), options=options)
+        input_driver = webdriver.Chrome(service=Service(), options=options)
 
          # click on google agree button so we can continue (not needed anymore)
          # EC.element_to_be_clickable((By.XPATH, '//span[contains(text(), "I agree")]')))

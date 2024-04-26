@@ -8,9 +8,9 @@ Follow these steps to use the scraper:
 - Download Chromedrive from [here](https://chromedriver.storage.googleapis.com/index.html?path=2.45/).
 - Install Python packages from requirements file, either using pip, conda or virtualenv:
 
-        conda create --name scraping python=3.6 --file requirements.txt
+        conda create --name scraping python=3.9 --file requirements.txt
 
-**Note**: Python >= 3.6 is required.
+**Note**: Python >= 3.9 is required.
 
 ## Basic Usage
 The scraper.py script needs two main parameters as input:
