@@ -6,7 +6,7 @@ crayons==0.4.0
 idna==3.6
 numpy==1.26.4
 pandas==2.2.0
-pymongo==4.6.1
+pymongo==4.6.3
 pytz==2024.1
 requests==2.31.0
 selenium==4.17.2
