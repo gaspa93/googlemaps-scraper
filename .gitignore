@@ -112,3 +112,4 @@ test/
 !requirements.txt
 !urls.txt
 !urls_places.txt
+chromedriver*

@@ -15,6 +15,7 @@ Follow these steps to use the scraper:
 ## Basic Usage
 The scraper.py script needs two main parameters as input:
 - `--i`: input file name, containing a list of urls that point to Google Maps place reviews (default: _urls.txt_)
+- `--o`: output file name, which will be created in the `data` folder (default: output.csv)
 - `--N`: number of reviews to retrieve, starting from the most recent (default: 100)
 
 Example:
@@ -22,8 +23,6 @@ Example:
   `python scraper.py --N 50`
 
 generates a csv file containing last 50 reviews of places present in _urls.txt_
-
-In current implementation, the CSV file is handled as an external function, so if you want to change path and/or name of output file, you need to modify that function.
 
 Additionally, other parameters can be provided:
 - `--place`: boolean value that allows to scrape POI metadata instead of reviews (default: false)
