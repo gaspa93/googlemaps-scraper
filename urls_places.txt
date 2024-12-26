@@ -1,2 +1,2 @@
-https://www.google.com/maps/place/Pantheon/@41.8986148,12.4746842,17z/data=!3m1!4b1!4m5!3m4!1s0x132f604f678640a9:0xcad165fa2036ce2c!8m2!3d41.8986108!4d12.4768729?authuser=0&hl=en
-https://www.google.com/maps/place/lastminute.com+London+Eye/@51.5033006,-0.1217424,17z/data=!3m2!4b1!5s0x487604c79a2ef535:0x6b1752373d1ab417!4m5!3m4!1s0x487604b900d26973:0x4291f3172409ea92!8m2!3d51.5032973!4d-0.1195537?authuser=0&hl=en
+https://www.google.com/maps/place/Shri+Ambabai+Temple,+Kolhapur/@16.6949604,74.2203203,17z/data=!3m1!4b1!4m6!3m5!1s0x3bc0555a31825e95:0x48d3dac4a165bedf!8m2!3d16.6948012!4d74.222732!16zL20vMDZqczNz?entry=ttu&g_ep=EgoyMDI0MTIxMS4wIKXMDSoASAFQAw%3D%3D
+https://www.google.com/maps/place/Panhala,+Maharashtra/@16.8098495,74.0970752,14z/data=!3m1!4b1!4m6!3m5!1s0x3bc1a8cd9a90de33:0xe4dc6fed2424203!8m2!3d16.8106871!4d74.1181234!16zL20vMDFfbGZ5?entry=ttu&g_ep=EgoyMDI0MTIxMS4wIKXMDSoASAFQAw%3D%3D
