@@ -31,7 +31,7 @@ Additionally, other parameters can be provided:
 - `--source`: boolean value that allows to store source URL as additional field in CSV (default: false)
 - `--sort-by`: string value among most_relevant, newest, highest_rating or lowest_rating (default: newest), developed by @quaesito and that allows to change sorting behavior of reviews
 
-For a basic description of logic and approach about this software development, have a look at the [Medium post](https://towardsdatascience.com/scraping-google-maps-reviews-in-python-2b153c655fc2)
+For a basic description of logic and approach about this software development, have a look at the [Medium post](https://medium.com/data-science/scraping-google-maps-reviews-in-python-2b153c655fc2)
 
 ## Monitoring functionality
 The monitor.py script can be used to have an incremental scraper and override the limitation about the number of reviews that can be retrieved.
