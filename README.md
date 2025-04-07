@@ -28,7 +28,7 @@ Additionally, other parameters can be provided:
 - `--place`: boolean value that allows to scrape POI metadata instead of reviews (default: false)
 - `--debug`: boolean value that allows to run the browser using the graphical interface (default: false)
 - `--source`: boolean value that allows to store source URL as additional field in CSV (default: false)
-- `--sort-by`: string value among most_relevant, newest, highest_rating or lowest_rating (default: newest), developed by @quaesito and that allows to change sorting behavior of reviews
+- `--sort_by`: string value among most_relevant, newest, highest_rating or lowest_rating (default: newest), developed by @quaesito and that allows to change sorting behavior of reviews
 
 For a basic description of logic and approach about this software development, have a look at the [Medium post](https://towardsdatascience.com/scraping-google-maps-reviews-in-python-2b153c655fc2)
 
