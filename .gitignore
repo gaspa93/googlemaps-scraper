@@ -113,3 +113,4 @@ test/
 !urls.txt
 !urls_places.txt
 chromedriver*
+.antigravity/
