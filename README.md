@@ -1,4 +1,16 @@
 # Google Maps Scraper
+
+<p align="center">
+    <img src="image/banner.png" alt="Logo" width="100%">
+</p>
+
+<p align="center">
+    <img src="https://img.shields.io/github/issues/gaspa93/googlemaps-scraper" alt="GitHub issues">
+    <img src="https://img.shields.io/github/stars/gaspa93/googlemaps-scraper" alt="GitHub stars">
+    <img src="https://img.shields.io/github/forks/gaspa93/googlemaps-scraper" alt="GitHub forks">
+    <img src="https://img.shields.io/github/last-commit/gaspa93/googlemaps-scraper" alt="GitHub last commit">
+</p>
+
 Scraper of Google Maps reviews.
 The code allows to extract the **most recent** reviews starting from the url of a specific Point Of Interest (POI) in Google Maps.
 An additional extension helps to monitor and incrementally store the reviews in a MongoDB instance.
